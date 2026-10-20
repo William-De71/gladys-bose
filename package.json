@@ -1,0 +1,44 @@
+{
+  "name": "gladys-bose",
+  "version": "0.1.0",
+  "private": true,
+  "description": "External Gladys Assistant integration for recent Bose smart speakers and soundbars: power, volume, playback, sources, presets, sound settings and groups on the local network.",
+  "homepage": "https://github.com/William-De71/gladys-bose",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/William-De71/gladys-bose.git"
+  },
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@gladysassistant/integration-sdk": "^0.15.0",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "gladys-assistant",
+    "gladys-assistant-integration",
+    "bose",
+    "bose-music",
+    "soundbar",
+    "smart-speaker",
+    "home-automation"
+  ]
+}

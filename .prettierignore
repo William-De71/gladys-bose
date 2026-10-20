@@ -1,0 +1,6 @@
+node_modules/
+package-lock.json
+/data/
+*.log
+docs/illustrations/out/
+.github/forum-*.md

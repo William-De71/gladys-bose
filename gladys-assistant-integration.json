@@ -1,0 +1,885 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Bose",
+  "description": {
+    "en": "Bose smart speakers and soundbars (Bose app): playback, volume, sources, presets, sound.",
+    "fr": "Enceintes et barres de son Bose (appli Bose) : lecture, volume, sources, préréglages, son.",
+    "de": "Bose-Smart-Lautsprecher und Soundbars (Bose-App): Wiedergabe, Lautstärke, Quellen, Klang.",
+    "es": "Altavoces y barras de sonido Bose (app Bose): reproducción, volumen, fuentes, sonido."
+  },
+  "version": "0.1.0",
+  "docker_image": "ghcr.io/william-de71/gladys-bose:0.1.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/William-De71/gladys-bose/main/cover.jpg",
+  "categories": ["multimedia"],
+  "transports": ["local"],
+  "network_discovery": [
+    {
+      "type": "mdns",
+      "service": "_bose-passport._tcp"
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "timeout_seconds": 90,
+      "label": {
+        "en": "Test the account and search the speakers",
+        "fr": "Tester le compte et rechercher les enceintes",
+        "de": "Konto testen und Lautsprecher suchen",
+        "es": "Probar la cuenta y buscar los altavoces"
+      },
+      "description": {
+        "en": "Signs in to the Bose account if needed, searches the local network, then lists every speaker found with its model, its address and whether it answers.",
+        "fr": "Se connecte au compte Bose si besoin, cherche sur le réseau local, puis liste chaque enceinte trouvée avec son modèle, son adresse et si elle répond.",
+        "de": "Meldet sich bei Bedarf beim Bose-Konto an, durchsucht das lokale Netzwerk und listet jeden gefundenen Lautsprecher mit Modell, Adresse und Erreichbarkeit auf.",
+        "es": "Inicia sesión en la cuenta Bose si hace falta, busca en la red local y lista cada altavoz encontrado con su modelo, su dirección y si responde."
+      }
+    }
+  ],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Your Bose account",
+        "fr": "Votre compte Bose",
+        "de": "Ihr Bose-Konto",
+        "es": "Su cuenta Bose"
+      },
+      "description": {
+        "en": "For the recent Bose speakers and soundbars set up with the Bose app (Smart Soundbar, Smart Ultra Soundbar, Soundbar 700/900, Home Speaker 500, Smart Speaker, Portable Smart Speaker, Music Amplifier). They are controlled on the local network, but only accept a token of the Bose account they belong to: Gladys gets it with your e-mail and password, then refreshes it. Only this sign-in goes to the Bose servers. SoundTouch speakers are not supported here: use the Bose SoundTouch integration. Not affiliated with Bose.",
+        "fr": "Pour les enceintes et barres de son Bose récentes, installées avec l’application Bose (Smart Soundbar, Smart Ultra Soundbar, Soundbar 700/900, Home Speaker 500, Smart Speaker, Portable Smart Speaker, Music Amplifier). Elles sont pilotées sur le réseau local, mais n’acceptent qu’un jeton du compte Bose auquel elles appartiennent : Gladys l’obtient avec votre e-mail et votre mot de passe, puis le renouvelle. Seule cette connexion passe par les serveurs Bose. Les enceintes SoundTouch ne sont pas gérées ici : utilisez l’intégration Bose SoundTouch. Sans lien avec Bose.",
+        "de": "Für aktuelle Bose-Lautsprecher und Soundbars, die mit der Bose-App eingerichtet wurden (Smart Soundbar, Smart Ultra Soundbar, Soundbar 700/900, Home Speaker 500, Smart Speaker, Portable Smart Speaker, Music Amplifier). Sie werden im lokalen Netzwerk gesteuert, akzeptieren aber nur ein Token des Bose-Kontos, zu dem sie gehören: Gladys holt es mit Ihrer E-Mail und Ihrem Passwort und erneuert es. Nur diese Anmeldung läuft über die Bose-Server. SoundTouch-Lautsprecher werden hier nicht unterstützt: Nutzen Sie die Integration Bose SoundTouch. Nicht mit Bose verbunden.",
+        "es": "Para los altavoces y barras de sonido Bose recientes, configurados con la aplicación Bose (Smart Soundbar, Smart Ultra Soundbar, Soundbar 700/900, Home Speaker 500, Smart Speaker, Portable Smart Speaker, Music Amplifier). Se controlan en la red local, pero solo aceptan un token de la cuenta Bose a la que pertenecen: Gladys lo obtiene con su correo y su contraseña, y luego lo renueva. Solo este inicio de sesión pasa por los servidores de Bose. Los altavoces SoundTouch no se admiten aquí: use la integración Bose SoundTouch. Sin relación con Bose."
+      },
+      "links": [
+        {
+          "url": "https://github.com/William-De71/gladys-bose/blob/main/docs/en.md",
+          "label": {
+            "en": "Setup guide",
+            "fr": "Guide d’installation",
+            "de": "Installationsanleitung",
+            "es": "Guía de instalación"
+          }
+        }
+      ]
+    },
+    {
+      "key": "email",
+      "type": "string",
+      "required": true,
+      "label": {
+        "en": "E-mail of the Bose account",
+        "fr": "E-mail du compte Bose",
+        "de": "E-Mail des Bose-Kontos",
+        "es": "Correo de la cuenta Bose"
+      },
+      "description": {
+        "en": "The account the speakers belong to in the Bose app.",
+        "fr": "Le compte auquel les enceintes appartiennent dans l’application Bose.",
+        "de": "Das Konto, zu dem die Lautsprecher in der Bose-App gehören.",
+        "es": "La cuenta a la que pertenecen los altavoces en la aplicación Bose."
+      },
+      "placeholder": {
+        "en": "name@example.com",
+        "fr": "nom@exemple.fr",
+        "de": "name@beispiel.de",
+        "es": "nombre@ejemplo.es"
+      }
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "required": true,
+      "label": {
+        "en": "Password of the Bose account",
+        "fr": "Mot de passe du compte Bose",
+        "de": "Passwort des Bose-Kontos",
+        "es": "Contraseña de la cuenta Bose"
+      },
+      "description": {
+        "en": "Used only to get the token from Bose; never shown again nor written to the logs. Accounts signed in with Google or Apple have no password: set one on the Bose account page first.",
+        "fr": "Sert uniquement à obtenir le jeton auprès de Bose ; jamais réaffiché ni écrit dans les journaux. Un compte ouvert avec Google ou Apple n’a pas de mot de passe : définissez-en un d’abord sur la page du compte Bose.",
+        "de": "Dient nur dazu, das Token bei Bose zu holen; wird nie wieder angezeigt und nie protokolliert. Konten mit Google- oder Apple-Anmeldung haben kein Passwort: Legen Sie zuerst eines auf der Bose-Kontoseite fest.",
+        "es": "Solo sirve para obtener el token de Bose; nunca se vuelve a mostrar ni se escribe en los registros. Las cuentas abiertas con Google o Apple no tienen contraseña: defina una primero en la página de la cuenta Bose."
+      }
+    },
+    {
+      "key": "speakers",
+      "type": "section",
+      "label": {
+        "en": "Finding your speakers",
+        "fr": "Trouver vos enceintes",
+        "de": "Ihre Lautsprecher finden",
+        "es": "Encontrar sus altavoces"
+      },
+      "description": {
+        "en": "Speakers on the same network as Gladys are found automatically (mDNS): open the Discover tab, or use the button below. If one is missing (another subnet, multicast filtered), type its IP address, shown in the Bose app under the speaker settings, Wi-Fi.",
+        "fr": "Les enceintes du même réseau que Gladys sont trouvées automatiquement (mDNS) : ouvrez l’onglet Découverte, ou utilisez le bouton ci-dessous. S’il en manque une (autre sous-réseau, multicast filtré), saisissez son adresse IP, affichée dans l’application Bose, dans les réglages de l’enceinte, Wi-Fi.",
+        "de": "Lautsprecher im selben Netzwerk wie Gladys werden automatisch gefunden (mDNS): Öffnen Sie den Tab „Entdecken“ oder nutzen Sie die Schaltfläche unten. Fehlt einer (anderes Subnetz, gefiltertes Multicast), geben Sie seine IP-Adresse ein, die in der Bose-App in den Lautsprechereinstellungen unter WLAN steht.",
+        "es": "Los altavoces de la misma red que Gladys se encuentran automáticamente (mDNS): abra la pestaña Descubrir o use el botón de abajo. Si falta alguno (otra subred, multicast filtrado), escriba su dirección IP, que aparece en la aplicación Bose, en los ajustes del altavoz, Wi-Fi."
+      }
+    },
+    {
+      "key": "hosts",
+      "type": "string",
+      "required": false,
+      "default": "",
+      "label": {
+        "en": "Speaker IP addresses",
+        "fr": "Adresses IP des enceintes",
+        "de": "IP-Adressen der Lautsprecher",
+        "es": "Direcciones IP de los altavoces"
+      },
+      "description": {
+        "en": "Optional, separated by commas. Only for the speakers the automatic search does not find.",
+        "fr": "Facultatif, séparées par des virgules. Seulement pour les enceintes que la recherche automatique ne trouve pas.",
+        "de": "Optional, durch Kommas getrennt. Nur für Lautsprecher, die die automatische Suche nicht findet.",
+        "es": "Opcional, separadas por comas. Solo para los altavoces que la búsqueda automática no encuentra."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.50, 192.168.1.51",
+        "fr": "ex. 192.168.1.50, 192.168.1.51",
+        "de": "z. B. 192.168.1.50, 192.168.1.51",
+        "es": "p. ej. 192.168.1.50, 192.168.1.51"
+      }
+    },
+    {
+      "key": "rescan_interval",
+      "type": "select",
+      "required": false,
+      "default": "60",
+      "label": {
+        "en": "Search the network again",
+        "fr": "Rechercher à nouveau sur le réseau",
+        "de": "Netzwerk erneut durchsuchen",
+        "es": "Volver a buscar en la red"
+      },
+      "description": {
+        "en": "To find new speakers and addresses changed by the router. A lost speaker is searched for anyway.",
+        "fr": "Pour trouver les nouvelles enceintes et les adresses changées par la box. Une enceinte perdue est recherchée dans tous les cas.",
+        "de": "Um neue Lautsprecher und vom Router geänderte Adressen zu finden. Ein verlorener Lautsprecher wird ohnehin gesucht.",
+        "es": "Para encontrar altavoces nuevos y direcciones cambiadas por el router. Un altavoz perdido se busca de todos modos."
+      },
+      "options": [
+        {
+          "value": "0",
+          "label": {
+            "en": "Never",
+            "fr": "Jamais",
+            "de": "Nie",
+            "es": "Nunca"
+          }
+        },
+        {
+          "value": "15",
+          "label": {
+            "en": "Every 15 minutes",
+            "fr": "Toutes les 15 minutes",
+            "de": "Alle 15 Minuten",
+            "es": "Cada 15 minutos"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "Every hour",
+            "fr": "Toutes les heures",
+            "de": "Stündlich",
+            "es": "Cada hora"
+          }
+        }
+      ]
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "required": false,
+      "default": "en",
+      "label": {
+        "en": "Language of the texts",
+        "fr": "Langue des textes",
+        "de": "Sprache der Texte",
+        "es": "Idioma de los textos"
+      },
+      "description": {
+        "en": "Names of the features, of the sources and of the presets, and the error messages of the scenes: Gladys does not tell the integration your language for those.",
+        "fr": "Noms des fonctionnalités, des sources et des préréglages, et messages d’erreur des scènes : Gladys ne transmet pas votre langue à l’intégration pour ceux-là.",
+        "de": "Namen der Funktionen, Quellen und Voreinstellungen sowie Fehlermeldungen der Szenen: Dafür teilt Gladys der Integration Ihre Sprache nicht mit.",
+        "es": "Nombres de las funciones, de las fuentes y de las presintonías, y mensajes de error de las escenas: Gladys no comunica su idioma a la integración para ellos."
+      },
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "now_playing",
+      "icon": "music",
+      "action_timeout_seconds": 30,
+      "label": {
+        "en": "Bose speaker",
+        "fr": "Enceinte Bose",
+        "de": "Bose-Lautsprecher",
+        "es": "Altavoz Bose"
+      },
+      "description": {
+        "en": "What a speaker plays, with the cover; state, source, volume; previous, play/pause, next, standby.",
+        "fr": "Ce que joue une enceinte, avec pochette ; état, source, volume ; boutons de lecture, veille.",
+        "de": "Was ein Lautsprecher spielt, mit Cover; Status, Quelle, Lautstärke; Wiedergabe-Tasten, Standby.",
+        "es": "Lo que suena en un altavoz, con carátula; estado, fuente, volumen; botones de reproducción."
+      },
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Speaker",
+            "fr": "Enceinte",
+            "de": "Lautsprecher",
+            "es": "Altavoz"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "playback_started",
+      "label": {
+        "en": "A Bose speaker starts playing",
+        "fr": "Une enceinte Bose commence la lecture",
+        "de": "Ein Bose-Lautsprecher beginnt die Wiedergabe",
+        "es": "Un altavoz Bose empieza a reproducir"
+      },
+      "description": {
+        "en": "From stopped, paused or standby; whatever the source.",
+        "fr": "Depuis l’arrêt, la pause ou la veille ; quelle que soit la source.",
+        "de": "Aus Stopp, Pause oder Standby; egal welche Quelle.",
+        "es": "Desde parado, en pausa o en espera; sea cual sea la fuente."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Speaker",
+            "fr": "Enceinte",
+            "de": "Lautsprecher",
+            "es": "Altavoz"
+          },
+          "description": {
+            "en": "Empty: any Bose speaker.",
+            "fr": "Vide : n’importe quelle enceinte Bose.",
+            "de": "Leer: jeder Bose-Lautsprecher.",
+            "es": "Vacío: cualquier altavoz Bose."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Speaker name",
+            "fr": "Nom de l’enceinte",
+            "de": "Name des Lautsprechers",
+            "es": "Nombre del altavoz"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title",
+            "fr": "Titre",
+            "de": "Titel",
+            "es": "Título"
+          }
+        },
+        {
+          "key": "artist",
+          "type": "string",
+          "label": {
+            "en": "Artist",
+            "fr": "Artiste",
+            "de": "Interpret",
+            "es": "Artista"
+          }
+        },
+        {
+          "key": "source",
+          "type": "string",
+          "label": {
+            "en": "Source (tv, optical, preset-1…, other)",
+            "fr": "Source (tv, optical, preset-1…, other)",
+            "de": "Quelle (tv, optical, preset-1…, other)",
+            "es": "Fuente (tv, optical, preset-1…, other)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "playback_stopped",
+      "label": {
+        "en": "A Bose speaker stops playing",
+        "fr": "Une enceinte Bose arrête la lecture",
+        "de": "Ein Bose-Lautsprecher beendet die Wiedergabe",
+        "es": "Un altavoz Bose deja de reproducir"
+      },
+      "description": {
+        "en": "Paused, stopped or put in standby.",
+        "fr": "Mise en pause, arrêtée ou mise en veille.",
+        "de": "Pausiert, gestoppt oder in Standby versetzt.",
+        "es": "En pausa, parado o puesto en espera."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Speaker",
+            "fr": "Enceinte",
+            "de": "Lautsprecher",
+            "es": "Altavoz"
+          },
+          "description": {
+            "en": "Empty: any Bose speaker.",
+            "fr": "Vide : n’importe quelle enceinte Bose.",
+            "de": "Leer: jeder Bose-Lautsprecher.",
+            "es": "Vacío: cualquier altavoz Bose."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Speaker name",
+            "fr": "Nom de l’enceinte",
+            "de": "Name des Lautsprechers",
+            "es": "Nombre del altavoz"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title",
+            "fr": "Titre",
+            "de": "Titel",
+            "es": "Título"
+          }
+        },
+        {
+          "key": "artist",
+          "type": "string",
+          "label": {
+            "en": "Artist",
+            "fr": "Artiste",
+            "de": "Interpret",
+            "es": "Artista"
+          }
+        },
+        {
+          "key": "source",
+          "type": "string",
+          "label": {
+            "en": "Source (tv, optical, preset-1…, other)",
+            "fr": "Source (tv, optical, preset-1…, other)",
+            "de": "Quelle (tv, optical, preset-1…, other)",
+            "es": "Fuente (tv, optical, preset-1…, other)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "source_changed",
+      "label": {
+        "en": "A Bose speaker changes source",
+        "fr": "Une enceinte Bose change de source",
+        "de": "Ein Bose-Lautsprecher wechselt die Quelle",
+        "es": "Un altavoz Bose cambia de fuente"
+      },
+      "description": {
+        "en": "TV, optical, a preset, or anything else (streaming, Bluetooth…).",
+        "fr": "TV, optique, un préréglage, ou autre chose (streaming, Bluetooth…).",
+        "de": "TV, optisch, eine Voreinstellung oder etwas anderes (Streaming, Bluetooth…).",
+        "es": "TV, óptica, una presintonía u otra cosa (streaming, Bluetooth…)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Speaker",
+            "fr": "Enceinte",
+            "de": "Lautsprecher",
+            "es": "Altavoz"
+          },
+          "description": {
+            "en": "Empty: any Bose speaker.",
+            "fr": "Vide : n’importe quelle enceinte Bose.",
+            "de": "Leer: jeder Bose-Lautsprecher.",
+            "es": "Vacío: cualquier altavoz Bose."
+          }
+        },
+        {
+          "key": "source",
+          "type": "select",
+          "label": {
+            "en": "New source",
+            "fr": "Nouvelle source",
+            "de": "Neue Quelle",
+            "es": "Nueva fuente"
+          },
+          "description": {
+            "en": "Empty: any source.",
+            "fr": "Vide : n’importe quelle source.",
+            "de": "Leer: jede Quelle.",
+            "es": "Vacío: cualquier fuente."
+          },
+          "options": [
+            {
+              "value": "tv",
+              "label": {
+                "en": "TV",
+                "fr": "TV",
+                "de": "TV",
+                "es": "TV"
+              }
+            },
+            {
+              "value": "optical",
+              "label": {
+                "en": "Optical",
+                "fr": "Optique",
+                "de": "Optisch",
+                "es": "Óptica"
+              }
+            },
+            {
+              "value": "analog",
+              "label": {
+                "en": "Analogue input",
+                "fr": "Entrée analogique",
+                "de": "Analogeingang",
+                "es": "Entrada analógica"
+              }
+            },
+            {
+              "value": "aux",
+              "label": {
+                "en": "AUX",
+                "fr": "AUX",
+                "de": "AUX",
+                "es": "AUX"
+              }
+            },
+            {
+              "value": "preset-1",
+              "label": {
+                "en": "Preset 1",
+                "fr": "Préréglage 1",
+                "de": "Voreinstellung 1",
+                "es": "Presintonía 1"
+              }
+            },
+            {
+              "value": "preset-2",
+              "label": {
+                "en": "Preset 2",
+                "fr": "Préréglage 2",
+                "de": "Voreinstellung 2",
+                "es": "Presintonía 2"
+              }
+            },
+            {
+              "value": "preset-3",
+              "label": {
+                "en": "Preset 3",
+                "fr": "Préréglage 3",
+                "de": "Voreinstellung 3",
+                "es": "Presintonía 3"
+              }
+            },
+            {
+              "value": "preset-4",
+              "label": {
+                "en": "Preset 4",
+                "fr": "Préréglage 4",
+                "de": "Voreinstellung 4",
+                "es": "Presintonía 4"
+              }
+            },
+            {
+              "value": "preset-5",
+              "label": {
+                "en": "Preset 5",
+                "fr": "Préréglage 5",
+                "de": "Voreinstellung 5",
+                "es": "Presintonía 5"
+              }
+            },
+            {
+              "value": "preset-6",
+              "label": {
+                "en": "Preset 6",
+                "fr": "Préréglage 6",
+                "de": "Voreinstellung 6",
+                "es": "Presintonía 6"
+              }
+            },
+            {
+              "value": "other",
+              "label": {
+                "en": "Other (streaming, Bluetooth, AirPlay…)",
+                "fr": "Autre (streaming, Bluetooth, AirPlay…)",
+                "de": "Andere (Streaming, Bluetooth, AirPlay…)",
+                "es": "Otra (streaming, Bluetooth, AirPlay…)"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Speaker name",
+            "fr": "Nom de l’enceinte",
+            "de": "Name des Lautsprechers",
+            "es": "Nombre del altavoz"
+          }
+        },
+        {
+          "key": "source",
+          "type": "string",
+          "label": {
+            "en": "Source (tv, optical, preset-1…, other)",
+            "fr": "Source (tv, optical, preset-1…, other)",
+            "de": "Quelle (tv, optical, preset-1…, other)",
+            "es": "Fuente (tv, optical, preset-1…, other)"
+          }
+        },
+        {
+          "key": "source_name",
+          "type": "string",
+          "label": {
+            "en": "Source name (Spotify, TV…)",
+            "fr": "Nom de la source (Spotify, TV…)",
+            "de": "Name der Quelle (Spotify, TV…)",
+            "es": "Nombre de la fuente (Spotify, TV…)"
+          }
+        },
+        {
+          "key": "previous_source",
+          "type": "string",
+          "label": {
+            "en": "Previous source",
+            "fr": "Source précédente",
+            "de": "Vorherige Quelle",
+            "es": "Fuente anterior"
+          }
+        }
+      ]
+    },
+    {
+      "key": "speaker_unreachable",
+      "label": {
+        "en": "A Bose speaker stops answering",
+        "fr": "Une enceinte Bose ne répond plus",
+        "de": "Ein Bose-Lautsprecher antwortet nicht mehr",
+        "es": "Un altavoz Bose deja de responder"
+      },
+      "description": {
+        "en": "Unplugged, out of Wi-Fi or switched off for more than a minute.",
+        "fr": "Débranchée, hors Wi-Fi ou éteinte depuis plus d’une minute.",
+        "de": "Ausgesteckt, ohne WLAN oder seit über einer Minute aus.",
+        "es": "Desenchufado, sin Wi-Fi o apagado durante más de un minuto."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Speaker",
+            "fr": "Enceinte",
+            "de": "Lautsprecher",
+            "es": "Altavoz"
+          },
+          "description": {
+            "en": "Empty: any Bose speaker.",
+            "fr": "Vide : n’importe quelle enceinte Bose.",
+            "de": "Leer: jeder Bose-Lautsprecher.",
+            "es": "Vacío: cualquier altavoz Bose."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "device_name",
+          "type": "string",
+          "label": {
+            "en": "Speaker name",
+            "fr": "Nom de l’enceinte",
+            "de": "Name des Lautsprechers",
+            "es": "Nombre del altavoz"
+          }
+        },
+        {
+          "key": "address",
+          "type": "string",
+          "label": {
+            "en": "IP address",
+            "fr": "Adresse IP",
+            "de": "IP-Adresse",
+            "es": "Dirección IP"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "play_preset",
+      "timeout_seconds": 20,
+      "label": {
+        "en": "Play a preset on a Bose speaker",
+        "fr": "Lancer un préréglage sur une enceinte Bose",
+        "de": "Voreinstellung auf einem Bose-Lautsprecher abspielen",
+        "es": "Reproducir una presintonía en un altavoz Bose"
+      },
+      "description": {
+        "en": "Plays one of the six presets saved in the Bose app (radio, playlist…), and switches the speaker on.",
+        "fr": "Lance l’un des six préréglages enregistrés dans l’application Bose (radio, playlist…), et allume l’enceinte.",
+        "de": "Spielt eine der sechs in der Bose-App gespeicherten Voreinstellungen (Radio, Playlist…) und schaltet den Lautsprecher ein.",
+        "es": "Reproduce una de las seis presintonías guardadas en la aplicación Bose (radio, lista…) y enciende el altavoz."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Speaker",
+            "fr": "Enceinte",
+            "de": "Lautsprecher",
+            "es": "Altavoz"
+          }
+        },
+        {
+          "key": "preset",
+          "type": "select",
+          "required": true,
+          "default": "1",
+          "label": {
+            "en": "Preset",
+            "fr": "Préréglage",
+            "de": "Voreinstellung",
+            "es": "Presintonía"
+          },
+          "options": [
+            {
+              "value": "1",
+              "label": {
+                "en": "Preset 1",
+                "fr": "Préréglage 1",
+                "de": "Voreinstellung 1",
+                "es": "Presintonía 1"
+              }
+            },
+            {
+              "value": "2",
+              "label": {
+                "en": "Preset 2",
+                "fr": "Préréglage 2",
+                "de": "Voreinstellung 2",
+                "es": "Presintonía 2"
+              }
+            },
+            {
+              "value": "3",
+              "label": {
+                "en": "Preset 3",
+                "fr": "Préréglage 3",
+                "de": "Voreinstellung 3",
+                "es": "Presintonía 3"
+              }
+            },
+            {
+              "value": "4",
+              "label": {
+                "en": "Preset 4",
+                "fr": "Préréglage 4",
+                "de": "Voreinstellung 4",
+                "es": "Presintonía 4"
+              }
+            },
+            {
+              "value": "5",
+              "label": {
+                "en": "Preset 5",
+                "fr": "Préréglage 5",
+                "de": "Voreinstellung 5",
+                "es": "Presintonía 5"
+              }
+            },
+            {
+              "value": "6",
+              "label": {
+                "en": "Preset 6",
+                "fr": "Préréglage 6",
+                "de": "Voreinstellung 6",
+                "es": "Presintonía 6"
+              }
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "key": "preset_name",
+          "type": "string",
+          "label": {
+            "en": "Preset name",
+            "fr": "Nom du préréglage",
+            "de": "Name der Voreinstellung",
+            "es": "Nombre de la presintonía"
+          }
+        }
+      ]
+    },
+    {
+      "key": "group_speakers",
+      "timeout_seconds": 30,
+      "label": {
+        "en": "Group Bose speakers",
+        "fr": "Grouper des enceintes Bose",
+        "de": "Bose-Lautsprecher gruppieren",
+        "es": "Agrupar altavoces Bose"
+      },
+      "description": {
+        "en": "The other speakers play what the leader plays, in sync. Adds them when the leader already leads a group.",
+        "fr": "Les autres enceintes jouent ce que joue l’enceinte principale, en synchro. Les ajoute si elle pilote déjà un groupe.",
+        "de": "Die anderen Lautsprecher spielen synchron, was der Hauptlautsprecher spielt. Fügt sie hinzu, wenn er schon eine Gruppe steuert.",
+        "es": "Los demás altavoces reproducen en sincronía lo que suena en el principal. Los añade si ya dirige un grupo."
+      },
+      "fields": [
+        {
+          "key": "leader",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Leading speaker",
+            "fr": "Enceinte principale",
+            "de": "Hauptlautsprecher",
+            "es": "Altavoz principal"
+          }
+        },
+        {
+          "key": "members",
+          "type": "multi_select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Speakers to add",
+            "fr": "Enceintes à ajouter",
+            "de": "Hinzuzufügende Lautsprecher",
+            "es": "Altavoces que añadir"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "key": "group_size",
+          "type": "number",
+          "label": {
+            "en": "Speakers in the group",
+            "fr": "Enceintes dans le groupe",
+            "de": "Lautsprecher in der Gruppe",
+            "es": "Altavoces en el grupo"
+          }
+        }
+      ]
+    },
+    {
+      "key": "ungroup_speaker",
+      "timeout_seconds": 30,
+      "label": {
+        "en": "Take a Bose speaker out of its group",
+        "fr": "Sortir une enceinte Bose de son groupe",
+        "de": "Bose-Lautsprecher aus seiner Gruppe nehmen",
+        "es": "Sacar un altavoz Bose de su grupo"
+      },
+      "description": {
+        "en": "A speaker that follows plays alone again; the leading speaker ends the whole group.",
+        "fr": "Une enceinte qui suit rejoue seule ; l’enceinte principale dissout tout le groupe.",
+        "de": "Ein folgender Lautsprecher spielt wieder allein; der Hauptlautsprecher löst die ganze Gruppe auf.",
+        "es": "Un altavoz que sigue vuelve a sonar solo; el altavoz principal disuelve todo el grupo."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Speaker",
+            "fr": "Enceinte",
+            "de": "Lautsprecher",
+            "es": "Altavoz"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,334 @@
+{
+  "soundbar": {
+    "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b",
+    "should_poll": false,
+    "features": [
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:power",
+        "category": "switch",
+        "type": "binary",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:volume",
+        "category": "music",
+        "type": "volume",
+        "unit": null,
+        "min": 0,
+        "max": 100,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:mute",
+        "category": "switch",
+        "type": "binary",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:play",
+        "category": "music",
+        "type": "play",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:pause",
+        "category": "music",
+        "type": "pause",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:previous",
+        "category": "music",
+        "type": "previous",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:next",
+        "category": "music",
+        "type": "next",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:playback-state",
+        "category": "music",
+        "type": "playback_state",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:source",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:title",
+        "category": "text",
+        "type": "text",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:artist",
+        "category": "text",
+        "type": "text",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:bass",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:treble",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:center",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:surround",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:height",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:audio-mode",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      }
+    ]
+  },
+  "portable": {
+    "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b",
+    "should_poll": false,
+    "features": [
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:power",
+        "category": "switch",
+        "type": "binary",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:volume",
+        "category": "music",
+        "type": "volume",
+        "unit": null,
+        "min": 0,
+        "max": 100,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:mute",
+        "category": "switch",
+        "type": "binary",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:play",
+        "category": "music",
+        "type": "play",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:pause",
+        "category": "music",
+        "type": "pause",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:previous",
+        "category": "music",
+        "type": "previous",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:next",
+        "category": "music",
+        "type": "next",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:playback-state",
+        "category": "music",
+        "type": "playback_state",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:source",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:title",
+        "category": "text",
+        "type": "text",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:artist",
+        "category": "text",
+        "type": "text",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:bass",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:treble",
+        "category": "text",
+        "type": "select",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:battery",
+        "category": "battery",
+        "type": "integer",
+        "unit": "percent",
+        "min": 0,
+        "max": 100,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:charging",
+        "category": "battery",
+        "type": "charging",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": true
+      }
+    ]
+  }
+}

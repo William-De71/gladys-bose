@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240" font-family="Inter, 'DejaVu Sans', Arial, sans-serif">
+  <title>Automatic release pipeline of the Bose integration (illustration)</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10z" fill="#4a5a66"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="240" fill="#ffffff"/>
+  <text x="500" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#24303c">Every merge on main, no manual step</text>
+  <g font-size="13" text-anchor="middle" fill="#24303c">
+    <rect x="10.0" y="60" width="96" height="70" rx="10" fill="#e8f1fb" stroke="#2f6fb5"/>
+    <text x="58.0" y="90" font-weight="700">Merge</text>
+    <text x="58.0" y="112" font-size="11" fill="#46505a">feat / fix / perf</text>
+    <line x1="108.0" y1="95" x2="117.5" y2="95" stroke="#4a5a66" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="120.5" y="60" width="96" height="70" rx="10" fill="#e8f1fb" stroke="#2f6fb5"/>
+    <text x="168.5" y="90" font-weight="700">CI</text>
+    <text x="168.5" y="112" font-size="11" fill="#46505a">lint · tests</text>
+    <line x1="218.5" y1="95" x2="228.0" y2="95" stroke="#4a5a66" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="231.0" y="60" width="96" height="70" rx="10" fill="#e8f1fb" stroke="#2f6fb5"/>
+    <text x="279.0" y="90" font-weight="700">Version</text>
+    <text x="279.0" y="112" font-size="11" fill="#46505a">from commits</text>
+    <line x1="329.0" y1="95" x2="338.5" y2="95" stroke="#4a5a66" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="341.5" y="60" width="96" height="70" rx="10" fill="#e8f1fb" stroke="#2f6fb5"/>
+    <text x="389.5" y="90" font-weight="700">Changelog</text>
+    <text x="389.5" y="112" font-size="11" fill="#46505a">generated</text>
+    <line x1="439.5" y1="95" x2="449.0" y2="95" stroke="#4a5a66" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="452.0" y="60" width="96" height="70" rx="10" fill="#edf7f1" stroke="#209678"/>
+    <text x="500.0" y="90" font-weight="700">Tag</text>
+    <text x="500.0" y="112" font-size="11" fill="#46505a">vX.Y.Z only</text>
+    <line x1="550.0" y1="95" x2="559.5" y2="95" stroke="#4a5a66" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="562.5" y="60" width="96" height="70" rx="10" fill="#edf7f1" stroke="#209678"/>
+    <text x="610.5" y="90" font-weight="700">Image</text>
+    <text x="610.5" y="112" font-size="10" fill="#46505a">amd64 + arm64</text>
+    <line x1="660.5" y1="95" x2="670.0" y2="95" stroke="#4a5a66" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="673.0" y="60" width="96" height="70" rx="10" fill="#edf7f1" stroke="#209678"/>
+    <text x="721.0" y="90" font-weight="700">main</text>
+    <text x="721.0" y="112" font-size="11" fill="#46505a">fast-forward</text>
+    <line x1="771.0" y1="95" x2="780.5" y2="95" stroke="#4a5a66" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="783.5" y="60" width="96" height="70" rx="10" fill="#fdf3e6" stroke="#c77700"/>
+    <text x="831.5" y="90" font-weight="700">GitHub</text>
+    <text x="831.5" y="112" font-size="11" fill="#46505a">Release</text>
+    <line x1="881.5" y1="95" x2="891.0" y2="95" stroke="#4a5a66" stroke-width="2" marker-end="url(#a)"/>
+    <rect x="894.0" y="60" width="96" height="70" rx="10" fill="#fdf3e6" stroke="#c77700"/>
+    <text x="942.0" y="90" font-weight="700">Verify</text>
+    <text x="942.0" y="112" font-size="11" fill="#46505a">public · store</text>
+  </g>
+  <g font-size="12" fill="#46505a">
+    <text x="20" y="166">feat → minor · fix / perf → patch · breaking → major (a minor below 1.0.0) · docs / chore / ci / test alone → no release</text>
+    <text x="20" y="188">chore(release): X.Y.Z never starts the workflow again · main announces the version only once its image exists</text>
+    <text x="20" y="210">GitHub Release notes = the CHANGELOG section · manual run: release-as (e.g. 1.0.0) or dry-run (summary only)</text>
+  </g>
+  <text x="980" y="232" text-anchor="end" font-size="12" fill="#8a949e">illustration</text>
+</svg>
