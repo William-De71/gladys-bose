@@ -138,7 +138,7 @@ Ein Ereignis pro vom Lautsprecher gemeldetem Übergang; keines in den fünf Seku
 
 ## Voraussetzungen
 
-- Gladys Assistant **5.3.0 oder neuer** (Musik-Player von Integrationen, Dashboard-Widgets sowie Szenen-Auslöser und -Aktionen; ältere Instanzen können die Integration nicht installieren).
+- Gladys Assistant **5.3.0 oder neuer** (Musik-Player und Katalog-Suchbegriffe von Integrationen, Dashboard-Widgets sowie Szenen-Auslöser und -Aktionen; ältere Instanzen können die Integration nicht installieren).
 - In der **Bose-App** eingerichtete Lautsprecher im selben Netzwerk wie Gladys, die zum eingegebenen Bose-Konto gehören.
 - E-Mail und Passwort dieses Bose-Kontos (Konten mit Google- oder Apple-Anmeldung müssen zuerst ein Passwort festlegen) und Internetzugang für die Anmeldung.
 

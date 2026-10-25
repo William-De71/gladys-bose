@@ -138,7 +138,7 @@ Un événement par transition signalée par l’enceinte ; aucun dans les cinq s
 
 ## Prérequis
 
-- Gladys Assistant **5.3.0 ou plus récent** (lecteurs de musique des intégrations, widgets de tableau de bord et déclencheurs et actions de scène ; les instances plus anciennes ne peuvent pas installer l’intégration).
+- Gladys Assistant **5.3.0 ou plus récent** (lecteurs de musique et mots-clés du catalogue des intégrations, widgets de tableau de bord et déclencheurs et actions de scène ; les instances plus anciennes ne peuvent pas installer l’intégration).
 - Des enceintes installées dans l’**application Bose**, sur le même réseau que Gladys, appartenant au compte Bose saisi.
 - L’e-mail et le mot de passe de ce compte Bose (un compte ouvert avec Google ou Apple doit d’abord définir un mot de passe), et un accès Internet pour la connexion.
 

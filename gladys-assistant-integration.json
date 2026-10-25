@@ -13,6 +13,18 @@
   "gladys_version": ">=5.3.0",
   "cover_image": "https://raw.githubusercontent.com/William-De71/gladys-bose/main/cover.jpg",
   "categories": ["multimedia"],
+  "keywords": [
+    "smart soundbar",
+    "soundbar",
+    "barre de son",
+    "enceinte",
+    "speaker",
+    "bose music",
+    "home speaker",
+    "portable smart speaker",
+    "music amplifier",
+    "multiroom"
+  ],
   "transports": ["local"],
   "network_discovery": [
     {

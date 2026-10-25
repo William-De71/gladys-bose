@@ -138,7 +138,7 @@ One event per transition pushed by the speaker; none in the five seconds after a
 
 ## Requirements
 
-- Gladys Assistant **5.3.0 or later** (music players of integrations, dashboard widgets and scene triggers and actions; older instances cannot install the integration).
+- Gladys Assistant **5.3.0 or later** (music players and catalog keywords of integrations, dashboard widgets and scene triggers and actions; older instances cannot install the integration).
 - Speakers set up in the **Bose app**, on the same network as Gladys, belonging to the Bose account you enter.
 - The e-mail and password of that Bose account (accounts opened with Google or Apple must set a password first), and Internet access for the sign-in.
 

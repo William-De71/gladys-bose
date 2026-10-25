@@ -39,7 +39,7 @@ test('one version everywhere, image of this repository', () => {
 
 test('store rules: type, Gladys version, transports, categories, permissions', () => {
   assert.equal(manifest.type, 'device');
-  // widgets and scene_* need 5.1.0, the music field and types 5.3.0.
+  // widgets and scene_* need 5.1.0, the music field, types and keywords 5.3.0.
   assert.equal(manifest.gladys_version, '>=5.3.0');
   // The presets are the catalog; no search, no queue on the local API.
   assert.deepEqual(manifest.music, { browse: true });
@@ -138,4 +138,20 @@ test('widgets: the keys of the code, settings without secrets', () => {
       assert.ok(!['secret', 'oauth2', 'account_link'].includes(setting.type));
     }
   }
+});
+
+test('catalog fields of Gladys 5.3: search keywords and countries', () => {
+  assert.ok(Array.isArray(manifest.keywords), 'keywords is a list');
+  assert.ok(manifest.keywords.length >= 1 && manifest.keywords.length <= 10, '1 to 10 keywords');
+  for (const keyword of manifest.keywords) {
+    assert.ok(
+      keyword.trim().length >= 2 && keyword.trim().length <= 30,
+      `"${keyword}": 2 to 30 chars`,
+    );
+  }
+  const normalized = manifest.keywords.map((keyword) => keyword.trim().toLowerCase());
+  assert.equal(new Set(normalized).size, normalized.length, 'keywords are unique');
+  assert.ok(!normalized.includes(manifest.name.toLowerCase()), 'the name is already searched');
+  // Usable anywhere: no country restriction.
+  assert.equal(manifest.countries, undefined);
 });

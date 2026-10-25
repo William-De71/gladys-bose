@@ -138,7 +138,7 @@ Un evento por transición notificada por el altavoz; ninguno en los cinco segund
 
 ## Requisitos
 
-- Gladys Assistant **5.3.0 o posterior** (reproductores de música de integraciones, widgets de panel y disparadores y acciones de escena; las instancias anteriores no pueden instalar la integración).
+- Gladys Assistant **5.3.0 o posterior** (reproductores de música y palabras clave del catálogo de integraciones, widgets de panel y disparadores y acciones de escena; las instancias anteriores no pueden instalar la integración).
 - Altavoces configurados en la **aplicación Bose**, en la misma red que Gladys y pertenecientes a la cuenta Bose introducida.
 - El correo y la contraseña de esa cuenta Bose (las cuentas abiertas con Google o Apple deben definir antes una contraseña) y acceso a Internet para el inicio de sesión.
 
