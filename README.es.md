@@ -5,7 +5,7 @@
 [![Licencia: Apache-2.0](https://img.shields.io/badge/licencia-Apache--2.0-blue.svg)](LICENSE)
 [![Última versión](https://img.shields.io/github/v/release/William-De71/gladys-bose?sort=semver)](https://github.com/William-De71/gladys-bose/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/William-De71/gladys-bose/release.yml?branch=main&label=CI)](https://github.com/William-De71/gladys-bose/actions/workflows/release.yml)
-[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.1.0-2f6fb5)](https://gladysassistant.com)
+[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.3.0-2f6fb5)](https://gladysassistant.com)
 
 ![Bose para Gladys Assistant](cover.jpg)
 
@@ -14,7 +14,7 @@ Sus altavoces y barras de sonido Bose recientes (los configurados con la aplicac
 ## Funciones
 
 - **Detección** mediante la búsqueda mDNS de Gladys (`_bose-passport._tcp`); se pueden escribir direcciones IP para los altavoces que no alcanza. Cada altavoz se identifica por su GUID y se vuelve a encontrar tras un cambio de dirección.
-- **Un dispositivo por altavoz**: Encendido, Volumen, Silencio, Reproducir, Pausa, Anterior, Siguiente, Estado de reproducción (la caja Música del panel), Fuente (TV, óptica, analógica, AUX, presintonías), Reproduciendo, Artista y, según el modelo, Graves, Medios, Agudos, Central, Envolvente, Altura, Subwoofer, Modo diálogo, Batería y Cargando.
+- **Un dispositivo por altavoz**: Encendido, Volumen, Silencio, Reproducir, Pausa, Anterior, Siguiente, Estado de reproducción (la caja Música del panel), Fuente (TV, óptica, analógica, AUX, presintonías), Reproduciendo, Artista, el reproductor de música de Gladys 5.3 (Título, Artista de la pista, Álbum, Carátula, Duración, Posición, Silencio) con las presintonías en su panel de exploración y, según el modelo, Graves, Medios, Agudos, Central, Envolvente, Altura, Subwoofer, Modo diálogo, Batería y Cargando.
 - **Estados notificados**: los altavoces avisan de cada cambio por su WebSocket local; no se consulta nada en bucle (una comprobación de presencia por minuto).
 - **Un widget de panel**: lo que suena con la carátula, estado, fuente, volumen, batería, grupo y los botones Anterior, Reproducir/Pausa, Siguiente, En espera.
 - **Cuatro disparadores de escena** (reproducción iniciada, reproducción detenida, fuente cambiada, altavoz inaccesible) y **tres acciones de escena** (reproducir una presintonía, agrupar altavoces, sacar un altavoz de su grupo).
@@ -84,19 +84,24 @@ sequenceDiagram
 
 ### Dispositivos y funciones
 
-| Función                                                        | Categoría / tipo                              | Valores                                                |
-| -------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------ |
-| Encendido, Silencio                                            | `switch` / `binary`                           | 0 / 1                                                  |
-| Volumen                                                        | `music` / `volume`                            | 0 a 100                                                |
-| Reproducir, Pausa, Anterior, Siguiente                         | `music` / `play`, `pause`, `previous`, `next` | botones                                                |
-| Estado de reproducción                                         | `music` / `playback_state`                    | 1 reproduciendo, 0 si no                               |
-| Fuente                                                         | `text` / `select`                             | `other`, `tv`, `optical`, `analog`, `aux`, `preset-1`… |
-| Reproduciendo, Artista                                         | `text` / `text`                               | texto                                                  |
-| Graves, Medios, Agudos, Central, Envolvente, Altura, Subwoofer | `text` / `select`                             | valores brutos del altavoz (−100…+100, paso 10)        |
-| Modo diálogo                                                   | `text` / `select`                             | modos de la barra de sonido (`NORMAL`, `DIALOG`…)      |
-| Batería, Cargando                                              | `battery` / `integer` (%), `charging`         | altavoces portátiles                                   |
+| Función                                                        | Categoría / tipo                                | Valores                                                                                |
+| -------------------------------------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Encendido, Silencio                                            | `switch` / `binary`                             | 0 / 1                                                                                  |
+| Volumen                                                        | `music` / `volume`                              | 0 a 100                                                                                |
+| Reproducir, Pausa, Anterior, Siguiente                         | `music` / `play`, `pause`, `previous`, `next`   | botones                                                                                |
+| Estado de reproducción                                         | `music` / `playback_state`                      | 1 reproduciendo, 0 si no; modificable: 1 reproduce, 0 pausa (sin parada)               |
+| Fuente                                                         | `text` / `select`                               | `other`, `tv`, `optical`, `analog`, `aux`, `preset-1`…                                 |
+| Reproduciendo, Artista                                         | `text` / `text`                                 | texto                                                                                  |
+| Título, Artista de la pista, Álbum, Carátula                   | `music` / `title`, `artist`, `album`, `artwork` | texto, vacío cuando no suena nada; la carátula es una clave servida por la integración |
+| Duración, Posición                                             | `music` / `duration`, `position` (segundos)     | posición tomada en cada aviso del altavoz; escribirla salta a ella                     |
+| Silencio (reproductor)                                         | `music` / `mute`                                | 0 / 1                                                                                  |
+| Graves, Medios, Agudos, Central, Envolvente, Altura, Subwoofer | `text` / `select`                               | valores brutos del altavoz (−100…+100, paso 10)                                        |
+| Modo diálogo                                                   | `text` / `select`                               | modos de la barra de sonido (`NORMAL`, `DIALOG`…)                                      |
+| Batería, Cargando                                              | `battery` / `integer` (%), `charging`           | altavoces portátiles                                                                   |
 
-Identificador externo del dispositivo: `ext:<selector>:speaker:<GUID>`; funciones `…:power`, `…:volume`, `…:mute`, `…:play`, `…:pause`, `…:previous`, `…:next`, `…:playback-state`, `…:source`, `…:title`, `…:artist`, `…:bass`, `…:midrange`, `…:treble`, `…:center`, `…:surround`, `…:height`, `…:subwoofer`, `…:audio-mode`, `…:battery`, `…:charging`. Solo se declaran las funciones que tiene el altavoz (los altavoces no siempre listan sus ajustes de sonido: los que faltan se piden igualmente, con una espera corta).
+Identificador externo del dispositivo: `ext:<selector>:speaker:<GUID>`; funciones `…:power`, `…:volume`, `…:mute`, `…:play`, `…:pause`, `…:previous`, `…:next`, `…:playback-state`, `…:source`, `…:title`, `…:artist`, `…:music-title`, `…:music-artist`, `…:album`, `…:artwork`, `…:duration`, `…:position`, `…:music-mute`, `…:bass`, `…:midrange`, `…:treble`, `…:center`, `…:surround`, `…:height`, `…:subwoofer`, `…:audio-mode`, `…:battery`, `…:charging`. Solo se declaran las funciones que tiene el altavoz (los altavoces no siempre listan sus ajustes de sonido: los que faltan se piden igualmente, con una espera corta).
+
+**Caja Música (Gladys 5.3)**: la caja muestra la carátula, el título, el artista, el álbum y una barra de progreso, con reproducir/pausa, anterior, siguiente, salto en la pista, volumen y silencio. Su panel de exploración lista las presintonías del altavoz: un toque inicia una. No hay búsqueda ni cola (la API local de los altavoces no las tiene), y la carátula solo se muestra cuando el servicio de música da una dirección https. Un altavoz añadido con una versión anterior recibe las nuevas funciones con el botón **Actualizar** de la pestaña Descubrir; las funciones existentes, sus identificadores externos y las escenas que las usan no cambian.
 
 ## Transporte
 
@@ -133,7 +138,7 @@ Un evento por transición notificada por el altavoz; ninguno en los cinco segund
 
 ## Requisitos
 
-- Gladys Assistant **5.1.0 o posterior** (widgets de panel y disparadores y acciones de escena de integraciones; las instancias anteriores no pueden instalar la integración).
+- Gladys Assistant **5.3.0 o posterior** (reproductores de música de integraciones, widgets de panel y disparadores y acciones de escena; las instancias anteriores no pueden instalar la integración).
 - Altavoces configurados en la **aplicación Bose**, en la misma red que Gladys y pertenecientes a la cuenta Bose introducida.
 - El correo y la contraseña de esa cuenta Bose (las cuentas abiertas con Google o Apple deben definir antes una contraseña) y acceso a Internet para el inicio de sesión.
 

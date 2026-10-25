@@ -8,6 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createFakeGladys } from '@gladysassistant/integration-sdk/testing';
+import { artworkKey, validateMediaItems } from '@gladysassistant/integration-sdk';
 
 import {
   parseAudioMode,
@@ -23,6 +24,8 @@ import {
   deviceName,
   featureValues,
   modeLabel,
+  nowPlayingOf,
+  presetItems,
   settingOptions,
   sourceCommand,
   sourceLabel,
@@ -32,9 +35,24 @@ import { createStatePublisher } from '../src/states.js';
 import { fakeClock, FakeSpeaker, SALON_GUID, silentLogger } from './helpers.js';
 
 // Pairs labeled by the Gladys front (deviceFeatureCategory in
-// front/src/config/i18n/en.json, checked on v5.2.1 and master 2026-10-19).
+// front/src/config/i18n/en.json, checked on v5.2.1 and master 2026-10-19;
+// the music types of Gladys 5.3.0, capabilities/music.md).
 const LABELED = {
-  music: new Set(['volume', 'play', 'pause', 'previous', 'next', 'playback_state']),
+  music: new Set([
+    'volume',
+    'play',
+    'pause',
+    'previous',
+    'next',
+    'playback_state',
+    'title',
+    'artist',
+    'album',
+    'artwork',
+    'duration',
+    'position',
+    'mute',
+  ]),
   switch: new Set(['binary']),
   text: new Set(['text', 'select']),
   battery: new Set(['integer', 'charging']),
@@ -88,6 +106,17 @@ test('every feature: labeled pair, bounds, read_only, has_feedback', () => {
         assert.notEqual(feature[field], undefined, `${where} ${field}`);
       }
       assert.ok(feature.min <= feature.max, where);
+      const button = ['play', 'pause', 'previous', 'next'].includes(feature.type);
+      if (feature.category === 'music' && !feature.read_only && !button) {
+        assert.equal(feature.has_feedback, true, `${where}: the speaker confirms`);
+      }
+      if (feature.type === 'playback_state') {
+        assert.deepEqual(
+          feature.supported_options.map((option) => option.value),
+          [0, 1],
+          'pause and play, no stop',
+        );
+      }
       if (feature.type === 'select') {
         assert.ok(feature.supported_options.length >= 2, where);
         for (const option of feature.supported_options) {
@@ -201,7 +230,7 @@ test('values: states, texts, sources', () => {
   assert.equal(values.power, 1);
   assert.equal(values.volume, 30);
   assert.equal(values.mute, 0);
-  assert.equal(values['playback-state'], 1);
+  assert.equal(values['playback-state'], undefined, 'published with the music features');
   assert.deepEqual(values.source, { text: 'other' });
   assert.deepEqual(values.title, { text: 'So What' });
   assert.deepEqual(values.artist, { text: 'Miles Davis' });
@@ -229,7 +258,6 @@ test('values: states, texts, sources', () => {
   entry.on = false;
   const off = Object.fromEntries(featureValues(entry, 'es'));
   assert.equal(off.power, 0);
-  assert.equal(off['playback-state'], 0);
   assert.deepEqual(off.title, { text: 'En espera' });
   assert.deepEqual(off.artist, { text: '—' }, 'Gladys ignores an empty text');
 
@@ -240,8 +268,126 @@ test('values: states, texts, sources', () => {
   assert.equal(portable.charging, 1);
 });
 
+test('now playing: the snapshot of publishNowPlaying, cleared explicitly', () => {
+  const entry = entryOf();
+  assert.deepEqual(nowPlayingOf(entry, 'en'), {
+    mute: false,
+    playback_state: 1,
+    title: 'So What',
+    artist: 'Miles Davis',
+    album: 'Kind of Blue',
+    artwork_url: 'https://i.scdn.co/image/kind-of-blue',
+    duration: 562,
+    position: 12,
+  });
+
+  // A station: no duration, the service name when there is no title, no
+  // cover outside https.
+  entry.nowPlaying = {
+    ...entry.nowPlaying,
+    title: '',
+    artist: '',
+    album: '',
+    art: 'http://cdn.example/fip.png',
+    duration: null,
+    position: null,
+    status: 'PAUSED',
+    playing: false,
+  };
+  assert.deepEqual(nowPlayingOf(entry, 'en'), {
+    mute: false,
+    playback_state: 0,
+    title: 'Spotify',
+    artist: '',
+    album: '',
+    artwork_url: null,
+    duration: 0,
+    position: 0,
+  });
+
+  // A position past the end is clamped to the duration.
+  entry.nowPlaying = { ...entry.nowPlaying, duration: 100, position: 140 };
+  assert.equal(nowPlayingOf(entry, 'en').position, 100);
+
+  entry.nowPlaying = { ...entry.nowPlaying, contentSource: 'PRODUCT', contentAccount: 'TV' };
+  const tv = nowPlayingOf(entry, 'fr');
+  assert.equal(tv.title, 'TV');
+  assert.equal(tv.duration, 0);
+  assert.equal(tv.artwork_url, null);
+
+  entry.on = false;
+  entry.muted = true;
+  assert.deepEqual(nowPlayingOf(entry, 'en'), {
+    mute: true,
+    playback_state: 0,
+    title: '',
+    artist: '',
+    album: '',
+    artwork_url: null,
+    duration: 0,
+    position: 0,
+  });
+
+  assert.equal(nowPlayingOf({ on: null, muted: null, nowPlaying: null }, 'en'), null);
+  assert.deepEqual(nowPlayingOf({ on: true, muted: true, nowPlaying: null }, 'en'), {
+    mute: true,
+  });
+
+  // Accepted by the SDK as is.
+  const gladys = createFakeGladys();
+  return gladys.publishNowPlaying(gladys.externalIds('speaker', SALON_GUID).device, {
+    ...nowPlayingOf(entryOf(), 'en'),
+  });
+});
+
+test('presets: the music catalog, valid MediaItems', () => {
+  const items = presetItems(entryOf(), 'fr', artworkKey);
+  assert.deepEqual(validateMediaItems(items), []);
+  assert.deepEqual(items, [
+    {
+      id: 'preset-1',
+      type: 'radio',
+      title: 'FIP',
+      subtitle: 'Préréglage 1',
+      artwork_key: artworkKey('https://cdn.example/1.png'),
+      browsable: false,
+      playable: true,
+    },
+    {
+      id: 'preset-2',
+      type: 'playlist',
+      title: 'Jazz',
+      subtitle: 'Préréglage 2',
+      artwork_key: artworkKey('https://cdn.example/2.png'),
+      browsable: false,
+      playable: true,
+    },
+  ]);
+  const unnamed = presetItems(
+    { presets: [{ id: '3', name: '', content: { source: 'DEEZER' } }] },
+    'en',
+    artworkKey,
+  );
+  assert.equal(unnamed[0].title, 'Preset 3');
+  assert.equal(unnamed[0].artwork_key, undefined);
+  assert.deepEqual(presetItems({}, 'en', artworkKey), []);
+});
+
 test('commands: what each feature sends', () => {
   const entry = entryOf();
+  assert.deepEqual(commandFor(entry, 'playback-state', 1).body, { state: 'PLAY' });
+  assert.deepEqual(commandFor(entry, 'playback-state', '0').body, { state: 'PAUSE' });
+  assert.throws(() => commandFor(entry, 'playback-state', 2), RangeError, 'no stop');
+  assert.deepEqual(commandFor(entry, 'position', 61.6), {
+    resource: '/content/transportControl',
+    method: 'PUT',
+    body: { state: 'SEEK', position: 62 },
+    applyAs: '/content/nowPlaying',
+  });
+  assert.throws(() => commandFor(entry, 'position', -1), RangeError);
+  assert.throws(() => commandFor(entry, 'position', 'end'), RangeError);
+  assert.deepEqual(commandFor(entry, 'music-mute', 1).body, { muted: true });
+  assert.throws(() => commandFor(entry, 'music-title', 'x'), RangeError, 'read only');
   assert.deepEqual(commandFor(entry, 'power', 0).body, { power: 'OFF' });
   assert.deepEqual(commandFor(entry, 'volume', 142.4).body, { value: 100 });
   assert.deepEqual(commandFor(entry, 'mute', 1).body, { muted: true });

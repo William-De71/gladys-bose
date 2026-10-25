@@ -10,7 +10,7 @@ Está pensada para los altavoces configurados con la **aplicación Bose** (antes
 
 ## Requisitos
 
-- Gladys Assistant 5.1.0 o posterior.
+- Gladys Assistant 5.3.0 o posterior.
 - Altavoces configurados en la aplicación Bose y conectados a la **misma red que Gladys**.
 - El correo y la contraseña de la cuenta Bose a la que pertenecen los altavoces. Una cuenta abierta con Google o Apple no tiene contraseña: defina una primero en la página de la cuenta Bose.
 - Acceso a Internet para Gladys durante el inicio de sesión en la cuenta Bose (luego como mucho una vez por hora, para renovar el token).
@@ -37,9 +37,11 @@ Si Bose rechaza el correo o la contraseña, la integración lo indica y no vuelv
 Abra la pestaña **Descubrir** de la integración y añada sus altavoces. Un altavoz tiene estas funciones, según el modelo:
 
 - **Encendido**, **Volumen** (0 a 100), **Silencio**.
-- **Reproducir**, **Pausa**, **Anterior**, **Siguiente** y **Estado de reproducción**: la caja Música del panel los usa.
+- **Reproducir**, **Pausa**, **Anterior**, **Siguiente** y **Estado de reproducción** (reproduciendo o en pausa, también como orden): la caja Música del panel los usa.
 - **Fuente**: TV, óptica, entrada analógica o AUX cuando la barra de sonido las tiene, y sus presintonías («Presintonía 2 · FIP»). **Otra** indica una fuente que Gladys no puede elegir por sí misma (Spotify, AirPlay, Bluetooth…).
-- **Reproduciendo** y **Artista**.
+- **Reproduciendo** y **Artista** (textos, como antes).
+- Para la caja Música del panel: **Título**, **Artista de la pista**, **Álbum**, **Carátula**, **Duración**, **Posición** (arrastre la barra para saltar) y **Silencio (reproductor)**. La caja también lista sus **presintonías**: un toque inicia una. No hay búsqueda ni cola: los altavoces no las ofrecen en la red local.
+- Un altavoz añadido con una versión anterior: abra la pestaña **Descubrir** y pulse **Actualizar** en él para obtener estas funciones. Nada más cambia.
 - **Graves**, **Agudos** y, en las barras de sonido, **Central**, **Envolvente**, **Altura**, **Subwoofer**: los valores brutos del altavoz, normalmente de −100 a +100 en pasos de 10.
 - **Modo diálogo** en las barras de sonido que lo tienen.
 - **Batería** y **Cargando** en los altavoces portátiles.

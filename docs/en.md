@@ -10,7 +10,7 @@ It is meant for the speakers set up with the **Bose app** (formerly Bose Music):
 
 ## Requirements
 
-- Gladys Assistant 5.1.0 or later.
+- Gladys Assistant 5.3.0 or later.
 - Speakers set up in the Bose app and connected to the **same network as Gladys**.
 - The e-mail and password of the Bose account the speakers belong to. An account opened with Google or Apple has no password: set one first on the Bose account page.
 - Gladys needs Internet access to sign in to the Bose account (then once an hour at most, to refresh the token).
@@ -37,9 +37,11 @@ If Bose refuses the e-mail or the password, the integration says so and does not
 Open the **Discover** tab of the integration and add your speakers. A speaker has these features, depending on the model:
 
 - **Power** (on / standby), **Volume** (0 to 100), **Mute**.
-- **Play**, **Pause**, **Previous**, **Next** and **Playback** (playing or not): the Music box of the dashboard uses them.
+- **Play**, **Pause**, **Previous**, **Next** and **Playback** (playing or paused, also a command): the Music box of the dashboard uses them.
 - **Source**: TV, optical, analogue input or AUX when the soundbar has them, and your presets (“Preset 2 · FIP”). **Other** means a source Gladys cannot select itself (Spotify, AirPlay, Bluetooth…).
-- **Now playing** and **Artist**.
+- **Now playing** and **Artist** (texts, as before).
+- For the Music box of the dashboard: **Title**, **Track artist**, **Album**, **Cover**, **Duration**, **Position** (drag the bar to seek) and **Mute (player)**. The box also lists your **presets**: a tap plays one. There is no search and no queue: the speakers do not offer them on the local network.
+- A speaker added with an older version: open the **Discover** tab and press **Update** on it to get these features. Nothing else changes.
 - **Bass**, **Treble**, and on the soundbars **Centre**, **Surround**, **Height**, **Subwoofer**: the raw values of the speaker, usually −100 to +100 by steps of 10.
 - **Dialogue mode** on the soundbars that have it.
 - **Battery** and **Charging** on the portable speakers.

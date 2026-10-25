@@ -5,7 +5,7 @@
 [![Lizenz: Apache-2.0](https://img.shields.io/badge/Lizenz-Apache--2.0-blue.svg)](LICENSE)
 [![Neueste Version](https://img.shields.io/github/v/release/William-De71/gladys-bose?sort=semver)](https://github.com/William-De71/gladys-bose/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/William-De71/gladys-bose/release.yml?branch=main&label=CI)](https://github.com/William-De71/gladys-bose/actions/workflows/release.yml)
-[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.1.0-2f6fb5)](https://gladysassistant.com)
+[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.3.0-2f6fb5)](https://gladysassistant.com)
 
 ![Bose für Gladys Assistant](cover.jpg)
 
@@ -14,7 +14,7 @@ Ihre aktuellen Bose-Smart-Lautsprecher und Soundbars (die mit der Bose-App einge
 ## Funktionen
 
 - **Erkennung** über die mDNS-Suche von Gladys (`_bose-passport._tcp`); für Lautsprecher, die sie nicht erreicht, können IP-Adressen eingegeben werden. Jeder Lautsprecher wird über seine GUID erkannt und nach einem Adresswechsel wiedergefunden.
-- **Ein Gerät pro Lautsprecher**: Ein/Standby, Lautstärke, Stumm, Wiedergabe, Pause, Zurück, Weiter, Wiedergabestatus (die Musik-Box des Dashboards), Quelle (TV, optisch, analog, AUX, Voreinstellungen), aktueller Titel, Interpret und je nach Modell Bass, Mitten, Höhen, Center, Surround, Höhe, Subwoofer, Dialogmodus, Akku und Lädt.
+- **Ein Gerät pro Lautsprecher**: Ein/Standby, Lautstärke, Stumm, Wiedergabe, Pause, Zurück, Weiter, Wiedergabestatus (die Musik-Box des Dashboards), Quelle (TV, optisch, analog, AUX, Voreinstellungen), aktueller Titel, Interpret, der Musik-Player von Gladys 5.3 (Titel, Interpret des Titels, Album, Cover, Dauer, Position, Stumm) mit den Voreinstellungen in seinem Durchsuchen-Bereich und je nach Modell Bass, Mitten, Höhen, Center, Surround, Höhe, Subwoofer, Dialogmodus, Akku und Lädt.
 - **Gemeldete Zustände**: Die Lautsprecher melden jede Änderung über ihren lokalen WebSocket; nichts wird abgefragt (eine Erreichbarkeitsprüfung pro Minute).
 - **Ein Dashboard-Widget**: der aktuelle Titel mit Cover, Status, Quelle, Lautstärke, Akku, Gruppe und die Tasten Zurück, Wiedergabe/Pause, Weiter, Standby.
 - **Vier Szenen-Auslöser** (Wiedergabe gestartet, Wiedergabe beendet, Quelle gewechselt, Lautsprecher nicht erreichbar) und **drei Szenen-Aktionen** (Voreinstellung abspielen, Lautsprecher gruppieren, Lautsprecher aus der Gruppe nehmen).
@@ -84,19 +84,24 @@ sequenceDiagram
 
 ### Geräte und Funktionen
 
-| Funktion                                               | Kategorie / Typ                               | Werte                                                  |
-| ------------------------------------------------------ | --------------------------------------------- | ------------------------------------------------------ |
-| Ein/Standby, Stumm                                     | `switch` / `binary`                           | 0 / 1                                                  |
-| Lautstärke                                             | `music` / `volume`                            | 0 bis 100                                              |
-| Wiedergabe, Pause, Zurück, Weiter                      | `music` / `play`, `pause`, `previous`, `next` | Tasten                                                 |
-| Wiedergabestatus                                       | `music` / `playback_state`                    | 1 bei Wiedergabe, sonst 0                              |
-| Quelle                                                 | `text` / `select`                             | `other`, `tv`, `optical`, `analog`, `aux`, `preset-1`… |
-| Aktueller Titel, Interpret                             | `text` / `text`                               | Text                                                   |
-| Bass, Mitten, Höhen, Center, Surround, Höhe, Subwoofer | `text` / `select`                             | Rohwerte des Lautsprechers (−100…+100, Schritt 10)     |
-| Dialogmodus                                            | `text` / `select`                             | Modi der Soundbar (`NORMAL`, `DIALOG`…)                |
-| Akku, Lädt                                             | `battery` / `integer` (%), `charging`         | tragbare Lautsprecher                                  |
+| Funktion                                               | Kategorie / Typ                                 | Werte                                                                                     |
+| ------------------------------------------------------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Ein/Standby, Stumm                                     | `switch` / `binary`                             | 0 / 1                                                                                     |
+| Lautstärke                                             | `music` / `volume`                              | 0 bis 100                                                                                 |
+| Wiedergabe, Pause, Zurück, Weiter                      | `music` / `play`, `pause`, `previous`, `next`   | Tasten                                                                                    |
+| Wiedergabestatus                                       | `music` / `playback_state`                      | 1 bei Wiedergabe, sonst 0; schreibbar: 1 spielt, 0 pausiert (kein Stopp)                  |
+| Quelle                                                 | `text` / `select`                               | `other`, `tv`, `optical`, `analog`, `aux`, `preset-1`…                                    |
+| Aktueller Titel, Interpret                             | `text` / `text`                                 | Text                                                                                      |
+| Titel, Interpret des Titels, Album, Cover              | `music` / `title`, `artist`, `album`, `artwork` | Text, leer wenn nichts läuft; das Cover ist ein Schlüssel, den die Integration ausliefert |
+| Dauer, Position                                        | `music` / `duration`, `position` (Sekunden)     | Position bei jeder Meldung des Lautsprechers erfasst; Schreiben springt dorthin           |
+| Stumm (Player)                                         | `music` / `mute`                                | 0 / 1                                                                                     |
+| Bass, Mitten, Höhen, Center, Surround, Höhe, Subwoofer | `text` / `select`                               | Rohwerte des Lautsprechers (−100…+100, Schritt 10)                                        |
+| Dialogmodus                                            | `text` / `select`                               | Modi der Soundbar (`NORMAL`, `DIALOG`…)                                                   |
+| Akku, Lädt                                             | `battery` / `integer` (%), `charging`           | tragbare Lautsprecher                                                                     |
 
-Externe ID des Geräts: `ext:<Selektor>:speaker:<GUID>`; Funktionen `…:power`, `…:volume`, `…:mute`, `…:play`, `…:pause`, `…:previous`, `…:next`, `…:playback-state`, `…:source`, `…:title`, `…:artist`, `…:bass`, `…:midrange`, `…:treble`, `…:center`, `…:surround`, `…:height`, `…:subwoofer`, `…:audio-mode`, `…:battery`, `…:charging`. Nur die Funktionen, die der Lautsprecher hat, werden deklariert (Lautsprecher listen ihre Klangeinstellungen nicht immer: Fehlende werden trotzdem mit kurzer Wartezeit abgefragt).
+Externe ID des Geräts: `ext:<Selektor>:speaker:<GUID>`; Funktionen `…:power`, `…:volume`, `…:mute`, `…:play`, `…:pause`, `…:previous`, `…:next`, `…:playback-state`, `…:source`, `…:title`, `…:artist`, `…:music-title`, `…:music-artist`, `…:album`, `…:artwork`, `…:duration`, `…:position`, `…:music-mute`, `…:bass`, `…:midrange`, `…:treble`, `…:center`, `…:surround`, `…:height`, `…:subwoofer`, `…:audio-mode`, `…:battery`, `…:charging`. Nur die Funktionen, die der Lautsprecher hat, werden deklariert (Lautsprecher listen ihre Klangeinstellungen nicht immer: Fehlende werden trotzdem mit kurzer Wartezeit abgefragt).
+
+**Musik-Box (Gladys 5.3)**: Die Box zeigt Cover, Titel, Interpret, Album und einen Fortschrittsbalken, mit Wiedergabe/Pause, zurück, weiter, Springen im Titel, Lautstärke und Stumm. Ihr Durchsuchen-Bereich listet die Voreinstellungen des Lautsprechers: Ein Tippen startet eine. Es gibt keine Suche und keine Warteschlange (die lokale API der Lautsprecher hat keine), und das Cover erscheint nur, wenn der Musikdienst eine https-Adresse liefert. Ein mit einer älteren Version hinzugefügter Lautsprecher erhält die neuen Funktionen über die Schaltfläche **Aktualisieren** im Tab Entdecken; bestehende Funktionen, ihre externen IDs und die Szenen, die sie nutzen, ändern sich nicht.
 
 ## Transport
 
@@ -133,7 +138,7 @@ Ein Ereignis pro vom Lautsprecher gemeldetem Übergang; keines in den fünf Seku
 
 ## Voraussetzungen
 
-- Gladys Assistant **5.1.0 oder neuer** (Dashboard-Widgets sowie Szenen-Auslöser und -Aktionen von Integrationen; ältere Instanzen können die Integration nicht installieren).
+- Gladys Assistant **5.3.0 oder neuer** (Musik-Player von Integrationen, Dashboard-Widgets sowie Szenen-Auslöser und -Aktionen; ältere Instanzen können die Integration nicht installieren).
 - In der **Bose-App** eingerichtete Lautsprecher im selben Netzwerk wie Gladys, die zum eingegebenen Bose-Konto gehören.
 - E-Mail und Passwort dieses Bose-Kontos (Konten mit Google- oder Apple-Anmeldung müssen zuerst ein Passwort festlegen) und Internetzugang für die Anmeldung.
 

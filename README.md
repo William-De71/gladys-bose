@@ -5,7 +5,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/William-De71/gladys-bose?sort=semver)](https://github.com/William-De71/gladys-bose/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/William-De71/gladys-bose/release.yml?branch=main&label=CI)](https://github.com/William-De71/gladys-bose/actions/workflows/release.yml)
-[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.1.0-2f6fb5)](https://gladysassistant.com)
+[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.3.0-2f6fb5)](https://gladysassistant.com)
 
 ![Bose for Gladys Assistant](cover.jpg)
 
@@ -14,7 +14,7 @@ Your recent Bose smart speakers and soundbars (the ones set up with the Bose app
 ## Features
 
 - **Discovery** through the mDNS search of Gladys (`_bose-passport._tcp`); IP addresses can be typed for the speakers it cannot reach. Each speaker is identified by its GUID and found again after an address change.
-- **One device per speaker**: Power, Volume, Mute, Play, Pause, Previous, Next, Playback state (the Music box of the dashboard), Source (TV, optical, analogue, AUX, presets), Now playing, Artist, and depending on the model Bass, Midrange, Treble, Centre, Surround, Height, Subwoofer, Dialogue mode, Battery and Charging.
+- **One device per speaker**: Power, Volume, Mute, Play, Pause, Previous, Next, Playback state (the Music box of the dashboard), Source (TV, optical, analogue, AUX, presets), Now playing, Artist, the music player of Gladys 5.3 (Title, Track artist, Album, Cover, Duration, Position, Mute) with the presets in its browse panel, and depending on the model Bass, Midrange, Treble, Centre, Surround, Height, Subwoofer, Dialogue mode, Battery and Charging.
 - **Pushed states**: the speakers notify every change over their local WebSocket; nothing is polled (a liveness check a minute).
 - **A dashboard widget**: what is playing with the cover, state, source, volume, battery, group, and the buttons Previous, Play/Pause, Next, Standby.
 - **Four scene triggers** (playback started, playback stopped, source changed, speaker unreachable) and **three scene actions** (play a preset, group speakers, ungroup a speaker).
@@ -84,19 +84,24 @@ sequenceDiagram
 
 ### Devices and features
 
-| Feature                                                     | Category / type                               | Values                                                 |
-| ----------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------ |
-| Power, Mute                                                 | `switch` / `binary`                           | 0 / 1                                                  |
-| Volume                                                      | `music` / `volume`                            | 0 to 100                                               |
-| Play, Pause, Previous, Next                                 | `music` / `play`, `pause`, `previous`, `next` | buttons                                                |
-| Playback                                                    | `music` / `playback_state`                    | 1 playing, 0 otherwise                                 |
-| Source                                                      | `text` / `select`                             | `other`, `tv`, `optical`, `analog`, `aux`, `preset-1`… |
-| Now playing, Artist                                         | `text` / `text`                               | text                                                   |
-| Bass, Midrange, Treble, Centre, Surround, Height, Subwoofer | `text` / `select`                             | raw values of the speaker (−100…+100, step 10)         |
-| Dialogue mode                                               | `text` / `select`                             | modes of the soundbar (`NORMAL`, `DIALOG`…)            |
-| Battery, Charging                                           | `battery` / `integer` (%), `charging`         | portable speakers                                      |
+| Feature                                                     | Category / type                                 | Values                                                                       |
+| ----------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------- |
+| Power, Mute                                                 | `switch` / `binary`                             | 0 / 1                                                                        |
+| Volume                                                      | `music` / `volume`                              | 0 to 100                                                                     |
+| Play, Pause, Previous, Next                                 | `music` / `play`, `pause`, `previous`, `next`   | buttons                                                                      |
+| Playback                                                    | `music` / `playback_state`                      | 1 playing, 0 otherwise; writable: 1 plays, 0 pauses (no stop)                |
+| Source                                                      | `text` / `select`                               | `other`, `tv`, `optical`, `analog`, `aux`, `preset-1`…                       |
+| Now playing, Artist                                         | `text` / `text`                                 | text                                                                         |
+| Title, Track artist, Album, Cover                           | `music` / `title`, `artist`, `album`, `artwork` | text, empty when nothing plays; the cover is a key served by the integration |
+| Duration, Position                                          | `music` / `duration`, `position` (seconds)      | position sampled on each push; writing it seeks                              |
+| Mute (player)                                               | `music` / `mute`                                | 0 / 1                                                                        |
+| Bass, Midrange, Treble, Centre, Surround, Height, Subwoofer | `text` / `select`                               | raw values of the speaker (−100…+100, step 10)                               |
+| Dialogue mode                                               | `text` / `select`                               | modes of the soundbar (`NORMAL`, `DIALOG`…)                                  |
+| Battery, Charging                                           | `battery` / `integer` (%), `charging`           | portable speakers                                                            |
 
-Device external id: `ext:<selector>:speaker:<GUID>`; features `…:power`, `…:volume`, `…:mute`, `…:play`, `…:pause`, `…:previous`, `…:next`, `…:playback-state`, `…:source`, `…:title`, `…:artist`, `…:bass`, `…:midrange`, `…:treble`, `…:center`, `…:surround`, `…:height`, `…:subwoofer`, `…:audio-mode`, `…:battery`, `…:charging`. Only the features the speaker has are declared (speakers do not always list their sound settings: the missing ones are asked anyway, with a short timeout).
+Device external id: `ext:<selector>:speaker:<GUID>`; features `…:power`, `…:volume`, `…:mute`, `…:play`, `…:pause`, `…:previous`, `…:next`, `…:playback-state`, `…:source`, `…:title`, `…:artist`, `…:music-title`, `…:music-artist`, `…:album`, `…:artwork`, `…:duration`, `…:position`, `…:music-mute`, `…:bass`, `…:midrange`, `…:treble`, `…:center`, `…:surround`, `…:height`, `…:subwoofer`, `…:audio-mode`, `…:battery`, `…:charging`. Only the features the speaker has are declared (speakers do not always list their sound settings: the missing ones are asked anyway, with a short timeout).
+
+**Music box (Gladys 5.3)**: the box shows the cover, title, artist, album and a progress bar, with play/pause, previous, next, seek, volume and mute. Its browse panel lists the presets of the speaker: a tap plays one. There is no search and no queue (the local API of the speakers has none), and the cover is only shown when the music service gives an https address. A speaker added with an older version gets the new features through the **Update** button of the Discover tab; the existing features, their external ids and the scenes that use them do not change.
 
 ## Transport
 
@@ -133,7 +138,7 @@ One event per transition pushed by the speaker; none in the five seconds after a
 
 ## Requirements
 
-- Gladys Assistant **5.1.0 or later** (dashboard widgets and scene triggers and actions of integrations; older instances cannot install the integration).
+- Gladys Assistant **5.3.0 or later** (music players of integrations, dashboard widgets and scene triggers and actions; older instances cannot install the integration).
 - Speakers set up in the **Bose app**, on the same network as Gladys, belonging to the Bose account you enter.
 - The e-mail and password of that Bose account (accounts opened with Google or Apple must set a password first), and Internet access for the sign-in.
 

@@ -5,7 +5,7 @@
 [![Licence : Apache-2.0](https://img.shields.io/badge/licence-Apache--2.0-blue.svg)](LICENSE)
 [![Dernière version](https://img.shields.io/github/v/release/William-De71/gladys-bose?sort=semver)](https://github.com/William-De71/gladys-bose/releases)
 [![CI](https://img.shields.io/github/actions/workflow/status/William-De71/gladys-bose/release.yml?branch=main&label=CI)](https://github.com/William-De71/gladys-bose/actions/workflows/release.yml)
-[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.1.0-2f6fb5)](https://gladysassistant.com)
+[![Gladys](https://img.shields.io/badge/Gladys-%E2%89%A5%205.3.0-2f6fb5)](https://gladysassistant.com)
 
 ![Bose pour Gladys Assistant](cover.jpg)
 
@@ -14,7 +14,7 @@ Vos enceintes et barres de son Bose récentes (celles installées avec l’appli
 ## Fonctionnalités
 
 - **Découverte** par la recherche mDNS de Gladys (`_bose-passport._tcp`) ; des adresses IP peuvent être saisies pour les enceintes qu’elle n’atteint pas. Chaque enceinte est identifiée par son GUID et retrouvée après un changement d’adresse.
-- **Un appareil par enceinte** : Marche/veille, Volume, Muet, Lecture, Pause, Précédent, Suivant, État de la lecture (la boîte Musique du tableau de bord), Source (TV, optique, analogique, AUX, préréglages), En cours, Artiste, et selon le modèle Graves, Médiums, Aigus, Centre, Surround, Hauteur, Caisson de basses, Mode dialogue, Batterie et En charge.
+- **Un appareil par enceinte** : Marche/veille, Volume, Muet, Lecture, Pause, Précédent, Suivant, État de la lecture (la boîte Musique du tableau de bord), Source (TV, optique, analogique, AUX, préréglages), En cours, Artiste, le lecteur de musique de Gladys 5.3 (Titre, Artiste du morceau, Album, Pochette, Durée, Position, Muet) avec les préréglages dans son panneau de navigation, et selon le modèle Graves, Médiums, Aigus, Centre, Surround, Hauteur, Caisson de basses, Mode dialogue, Batterie et En charge.
 - **États poussés** : les enceintes signalent chaque changement sur leur WebSocket local ; rien n’est interrogé en boucle (un contrôle de présence par minute).
 - **Un widget de tableau de bord** : la lecture en cours avec la pochette, état, source, volume, batterie, groupe, et les boutons Précédent, Lecture/Pause, Suivant, Veille.
 - **Quatre déclencheurs de scène** (lecture démarrée, lecture arrêtée, source changée, enceinte injoignable) et **trois actions de scène** (lancer un préréglage, grouper des enceintes, sortir une enceinte de son groupe).
@@ -84,19 +84,24 @@ sequenceDiagram
 
 ### Appareils et fonctionnalités
 
-| Fonctionnalité                                             | Catégorie / type                              | Valeurs                                                |
-| ---------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------ |
-| Marche/veille, Muet                                        | `switch` / `binary`                           | 0 / 1                                                  |
-| Volume                                                     | `music` / `volume`                            | 0 à 100                                                |
-| Lecture, Pause, Précédent, Suivant                         | `music` / `play`, `pause`, `previous`, `next` | boutons                                                |
-| État de la lecture                                         | `music` / `playback_state`                    | 1 en lecture, 0 sinon                                  |
-| Source                                                     | `text` / `select`                             | `other`, `tv`, `optical`, `analog`, `aux`, `preset-1`… |
-| En cours, Artiste                                          | `text` / `text`                               | texte                                                  |
-| Graves, Médiums, Aigus, Centre, Surround, Hauteur, Caisson | `text` / `select`                             | valeurs brutes de l’enceinte (−100…+100, pas de 10)    |
-| Mode dialogue                                              | `text` / `select`                             | modes de la barre de son (`NORMAL`, `DIALOG`…)         |
-| Batterie, En charge                                        | `battery` / `integer` (%), `charging`         | enceintes portables                                    |
+| Fonctionnalité                                             | Catégorie / type                                | Valeurs                                                                           |
+| ---------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------- |
+| Marche/veille, Muet                                        | `switch` / `binary`                             | 0 / 1                                                                             |
+| Volume                                                     | `music` / `volume`                              | 0 à 100                                                                           |
+| Lecture, Pause, Précédent, Suivant                         | `music` / `play`, `pause`, `previous`, `next`   | boutons                                                                           |
+| État de la lecture                                         | `music` / `playback_state`                      | 1 en lecture, 0 sinon ; modifiable : 1 lance, 0 met en pause (pas d’arrêt)        |
+| Source                                                     | `text` / `select`                               | `other`, `tv`, `optical`, `analog`, `aux`, `preset-1`…                            |
+| En cours, Artiste                                          | `text` / `text`                                 | texte                                                                             |
+| Titre, Artiste du morceau, Album, Pochette                 | `music` / `title`, `artist`, `album`, `artwork` | texte, vide quand rien ne joue ; la pochette est une clé servie par l’intégration |
+| Durée, Position                                            | `music` / `duration`, `position` (secondes)     | position relevée à chaque envoi de l’enceinte ; l’écrire déplace la lecture       |
+| Muet (lecteur)                                             | `music` / `mute`                                | 0 / 1                                                                             |
+| Graves, Médiums, Aigus, Centre, Surround, Hauteur, Caisson | `text` / `select`                               | valeurs brutes de l’enceinte (−100…+100, pas de 10)                               |
+| Mode dialogue                                              | `text` / `select`                               | modes de la barre de son (`NORMAL`, `DIALOG`…)                                    |
+| Batterie, En charge                                        | `battery` / `integer` (%), `charging`           | enceintes portables                                                               |
 
-Identifiant externe de l’appareil : `ext:<sélecteur>:speaker:<GUID>` ; fonctionnalités `…:power`, `…:volume`, `…:mute`, `…:play`, `…:pause`, `…:previous`, `…:next`, `…:playback-state`, `…:source`, `…:title`, `…:artist`, `…:bass`, `…:midrange`, `…:treble`, `…:center`, `…:surround`, `…:height`, `…:subwoofer`, `…:audio-mode`, `…:battery`, `…:charging`. Seules les fonctionnalités que l’enceinte possède sont déclarées (les enceintes ne listent pas toujours leurs réglages du son : ceux qui manquent sont quand même demandés, avec un délai court).
+Identifiant externe de l’appareil : `ext:<sélecteur>:speaker:<GUID>` ; fonctionnalités `…:power`, `…:volume`, `…:mute`, `…:play`, `…:pause`, `…:previous`, `…:next`, `…:playback-state`, `…:source`, `…:title`, `…:artist`, `…:music-title`, `…:music-artist`, `…:album`, `…:artwork`, `…:duration`, `…:position`, `…:music-mute`, `…:bass`, `…:midrange`, `…:treble`, `…:center`, `…:surround`, `…:height`, `…:subwoofer`, `…:audio-mode`, `…:battery`, `…:charging`. Seules les fonctionnalités que l’enceinte possède sont déclarées (les enceintes ne listent pas toujours leurs réglages du son : ceux qui manquent sont quand même demandés, avec un délai court).
+
+**Boîte Musique (Gladys 5.3)** : la boîte affiche la pochette, le titre, l’artiste, l’album et une barre de progression, avec lecture/pause, précédent, suivant, déplacement dans le morceau, volume et muet. Son panneau de navigation liste les préréglages de l’enceinte : un appui en lance un. Il n’y a ni recherche ni file d’attente (l’API locale des enceintes n’en a pas), et la pochette ne s’affiche que si le service de musique donne une adresse https. Une enceinte ajoutée avec une version plus ancienne reçoit les nouvelles fonctionnalités avec le bouton **Mettre à jour** de l’onglet Découverte ; les fonctionnalités existantes, leurs identifiants externes et les scènes qui les utilisent ne changent pas.
 
 ## Transport
 
@@ -133,7 +138,7 @@ Un événement par transition signalée par l’enceinte ; aucun dans les cinq s
 
 ## Prérequis
 
-- Gladys Assistant **5.1.0 ou plus récent** (widgets de tableau de bord et déclencheurs et actions de scène des intégrations ; les instances plus anciennes ne peuvent pas installer l’intégration).
+- Gladys Assistant **5.3.0 ou plus récent** (lecteurs de musique des intégrations, widgets de tableau de bord et déclencheurs et actions de scène ; les instances plus anciennes ne peuvent pas installer l’intégration).
 - Des enceintes installées dans l’**application Bose**, sur le même réseau que Gladys, appartenant au compte Bose saisi.
 - L’e-mail et le mot de passe de ce compte Bose (un compte ouvert avec Google ou Apple doit d’abord définir un mot de passe), et un accès Internet pour la connexion.
 

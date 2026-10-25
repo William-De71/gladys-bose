@@ -10,7 +10,7 @@ Sie ist für Lautsprecher gedacht, die mit der **Bose-App** (früher Bose Music)
 
 ## Voraussetzungen
 
-- Gladys Assistant 5.1.0 oder neuer.
+- Gladys Assistant 5.3.0 oder neuer.
 - In der Bose-App eingerichtete Lautsprecher im **selben Netzwerk wie Gladys**.
 - E-Mail und Passwort des Bose-Kontos, zu dem die Lautsprecher gehören. Ein Konto mit Google- oder Apple-Anmeldung hat kein Passwort: Legen Sie zuerst eines auf der Bose-Kontoseite fest.
 - Internetzugang für Gladys für die Anmeldung beim Bose-Konto (danach höchstens einmal pro Stunde, um das Token zu erneuern).
@@ -37,9 +37,11 @@ Lehnt Bose E-Mail oder Passwort ab, zeigt die Integration das an und versucht es
 Öffnen Sie den Tab **Entdecken** der Integration und fügen Sie Ihre Lautsprecher hinzu. Ein Lautsprecher hat je nach Modell diese Funktionen:
 
 - **Ein/Standby**, **Lautstärke** (0 bis 100), **Stumm**.
-- **Wiedergabe**, **Pause**, **Zurück**, **Weiter** und **Wiedergabestatus**: Die Musik-Box des Dashboards nutzt sie.
+- **Wiedergabe**, **Pause**, **Zurück**, **Weiter** und **Wiedergabestatus** (Wiedergabe oder Pause, auch als Befehl): Die Musik-Box des Dashboards nutzt sie.
 - **Quelle**: TV, optisch, Analogeingang oder AUX, wenn die Soundbar sie hat, und Ihre Voreinstellungen („Voreinstellung 2 · FIP“). **Andere** steht für eine Quelle, die Gladys nicht selbst wählen kann (Spotify, AirPlay, Bluetooth…).
-- **Aktueller Titel** und **Interpret**.
+- **Aktueller Titel** und **Interpret** (Texte, wie bisher).
+- Für die Musik-Box des Dashboards: **Titel**, **Interpret des Titels**, **Album**, **Cover**, **Dauer**, **Position** (Balken ziehen, um zu springen) und **Stumm (Player)**. Die Box listet auch Ihre **Voreinstellungen**: Ein Tippen startet eine. Es gibt keine Suche und keine Warteschlange: Die Lautsprecher bieten sie im lokalen Netzwerk nicht an.
+- Ein mit einer älteren Version hinzugefügter Lautsprecher: Öffnen Sie den Tab **Entdecken** und drücken Sie bei ihm auf **Aktualisieren**, um diese Funktionen zu erhalten. Sonst ändert sich nichts.
 - **Bass**, **Höhen** und auf den Soundbars **Center**, **Surround**, **Höhe**, **Subwoofer**: die Rohwerte des Lautsprechers, meist −100 bis +100 in Zehnerschritten.
 - **Dialogmodus** auf den Soundbars, die ihn haben.
 - **Akku** und **Lädt** auf den tragbaren Lautsprechern.

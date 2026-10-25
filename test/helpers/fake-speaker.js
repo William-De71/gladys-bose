@@ -67,6 +67,8 @@ export class FakeSpeaker {
       album: 'Kind of Blue',
       art: 'https://i.scdn.co/image/kind-of-blue',
       location: '',
+      // Seconds into the track when a body is written (no clock: a sample).
+      position: 12,
     };
     this.presets = {
       1: { name: 'FIP', source: 'TUNEIN', account: '', location: '/v1/playback/station/s15200' },
@@ -149,7 +151,12 @@ export class FakeSpeaker {
       metadata: product
         ? {}
         : { album: playing.album, artist: playing.artist, duration: 562, trackName: playing.title },
-      state: { status: playing.status, timeIntoTrack: 12, canPause: true },
+      state: {
+        status: playing.status,
+        ...(product ? {} : { timeIntoTrack: playing.position ?? 0 }),
+        canPause: true,
+        canSeek: !product,
+      },
       track: product ? {} : { contentItem: { containerArt: playing.art } },
     };
   }
@@ -272,8 +279,12 @@ export class FakeSpeaker {
           this.playing.status = next;
         } else if (body.state === 'SKIPNEXT') {
           this.playing.title = 'Freddie Freeloader';
+          this.playing.position = 0;
         } else if (body.state === 'SKIPPREVIOUS') {
           this.playing.title = 'So What';
+          this.playing.position = 0;
+        } else if (body.state === 'SEEK' && Number.isInteger(body.position)) {
+          this.playing.position = body.position;
         }
         this.push('/content/nowPlaying', this.nowPlaying());
         return this.nowPlaying();
@@ -291,6 +302,7 @@ export class FakeSpeaker {
             album: '',
             art: body.preset.containerArt,
             location: body.preset.location,
+            position: 0,
           };
           this.lastInitiator = body.initiatorID;
         } else {

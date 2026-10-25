@@ -3,8 +3,12 @@
 //
 // One device per speaker, a music player in the Gladys sense: the `music/*`
 // features drive the Music box of the dashboard (play, pause, previous,
-// next, volume, playback state); power, mute, source, what is playing, the
-// sound settings and the battery show in the device box.
+// next, volume, playback state, and since Gladys 5.3 title, artist, album,
+// cover, duration, position and mute); power, mute, source, what is
+// playing, the sound settings and the battery show in the device box.
+//
+// The `text` features `title` and `artist` of 0.1 stay (scenes and boxes use
+// them); the `music` ones live under their own keys (`music-title`…).
 //
 // The features depend on what the speaker has: a centre channel, a height
 // channel, a dialogue mode on the soundbars; a battery on the portable
@@ -15,6 +19,8 @@ import {
   DEVICE_FEATURE_CATEGORIES as CATEGORIES,
   DEVICE_FEATURE_TYPES as TYPES,
   DEVICE_FEATURE_UNITS as UNITS,
+  MUSIC_MEDIA_TYPES,
+  MUSIC_PLAYBACK_STATE,
 } from '@gladysassistant/integration-sdk';
 import { AUDIO_SETTINGS, INPUTS, selectableInputs } from './bose/model.js';
 import { text } from './i18n.js';
@@ -33,6 +39,14 @@ export const FEATURE_KEYS = {
   SOURCE: 'source',
   TITLE: 'title',
   ARTIST: 'artist',
+  // Music player (Gladys 5.3): published with publishNowPlaying.
+  MUSIC_TITLE: 'music-title',
+  MUSIC_ARTIST: 'music-artist',
+  ALBUM: 'album',
+  ARTWORK: 'artwork',
+  DURATION: 'duration',
+  POSITION: 'position',
+  MUSIC_MUTE: 'music-mute',
   AUDIO_MODE: 'audio-mode',
   BATTERY: 'battery',
   CHARGING: 'charging',
@@ -49,6 +63,11 @@ export const NOTHING = '—';
 
 const MAX_SETTING_OPTIONS = 41;
 const MAX_TEXT = 200;
+// Bound of `duration` and `position` (seconds): part of the compared fields,
+// so generous once and for all.
+const MAX_SECONDS = 24 * 60 * 60;
+// Services whose presets are stations rather than playlists.
+const RADIO_SOURCES = new Set(['TUNEIN', 'IHEART', 'SIRIUSXM', 'RADIOPLAYER', 'RADIO_COM']);
 
 /**
  * @description The id of a speaker in the external ids: its GUID.
@@ -97,6 +116,17 @@ const textFeature = (key, language) =>
     category: CATEGORIES.TEXT,
     type: TYPES.TEXT.TEXT,
     // NOT NULL in the core, even for a text (422 on "Add" otherwise).
+    min: 0,
+    max: 0,
+    read_only: true,
+    has_feedback: false,
+  });
+
+/** A `music` string state (title, artist, album, cover key). */
+const musicText = (key, language, type) =>
+  feature(key, language, {
+    category: CATEGORIES.MUSIC,
+    type,
     min: 0,
     max: 0,
     read_only: true,
@@ -204,18 +234,63 @@ export function speakerSpecs(entry, language) {
     button(FEATURE_KEYS.PAUSE, language, TYPES.MUSIC.PAUSE),
     button(FEATURE_KEYS.PREVIOUS, language, TYPES.MUSIC.PREVIOUS),
     button(FEATURE_KEYS.NEXT, language, TYPES.MUSIC.NEXT),
-    feature(FEATURE_KEYS.PLAYBACK, language, {
-      category: CATEGORIES.MUSIC,
-      type: TYPES.MUSIC.PLAYBACK_STATE,
-      min: 0,
-      max: 1,
-      read_only: true,
-      has_feedback: false,
-      keep_history: true,
-    }),
+    {
+      // Writable since Gladys 5.3: 1 plays, 0 pauses. The speakers have no
+      // stop of their own: the subset is declared (and `max` stays 1).
+      ...feature(FEATURE_KEYS.PLAYBACK, language, {
+        category: CATEGORIES.MUSIC,
+        type: TYPES.MUSIC.PLAYBACK_STATE,
+        min: 0,
+        max: 1,
+        read_only: false,
+        has_feedback: true,
+      }),
+      supported_options: [
+        {
+          value: MUSIC_PLAYBACK_STATE.PAUSED,
+          label: text('playback_paused', language),
+          sort_order: 0,
+        },
+        {
+          value: MUSIC_PLAYBACK_STATE.PLAYING,
+          label: text('playback_playing', language),
+          sort_order: 1,
+        },
+      ],
+    },
     select(FEATURE_KEYS.SOURCE, language, sourceOptions(entry, language)),
     textFeature(FEATURE_KEYS.TITLE, language),
     textFeature(FEATURE_KEYS.ARTIST, language),
+    musicText(FEATURE_KEYS.MUSIC_TITLE, language, TYPES.MUSIC.TITLE),
+    musicText(FEATURE_KEYS.MUSIC_ARTIST, language, TYPES.MUSIC.ARTIST),
+    musicText(FEATURE_KEYS.ALBUM, language, TYPES.MUSIC.ALBUM),
+    musicText(FEATURE_KEYS.ARTWORK, language, TYPES.MUSIC.ARTWORK),
+    feature(FEATURE_KEYS.DURATION, language, {
+      category: CATEGORIES.MUSIC,
+      type: TYPES.MUSIC.DURATION,
+      unit: UNITS.SECONDS,
+      min: 0,
+      max: MAX_SECONDS,
+      read_only: true,
+      has_feedback: false,
+    }),
+    feature(FEATURE_KEYS.POSITION, language, {
+      category: CATEGORIES.MUSIC,
+      type: TYPES.MUSIC.POSITION,
+      unit: UNITS.SECONDS,
+      min: 0,
+      max: MAX_SECONDS,
+      read_only: false,
+      has_feedback: true,
+    }),
+    feature(FEATURE_KEYS.MUSIC_MUTE, language, {
+      category: CATEGORIES.MUSIC,
+      type: TYPES.MUSIC.MUTE,
+      min: 0,
+      max: 1,
+      read_only: false,
+      has_feedback: true,
+    }),
   ];
   for (const key of Object.keys(AUDIO_SETTINGS)) {
     const setting = entry.audio?.[key];
@@ -404,7 +479,7 @@ export function featureValues(entry, language) {
     values.push([FEATURE_KEYS.MUTE, entry.muted ? 1 : 0]);
   }
   if (entry.nowPlaying || entry.on === false) {
-    values.push([FEATURE_KEYS.PLAYBACK, entry.on !== false && entry.nowPlaying?.playing ? 1 : 0]);
+    // The playback state goes with the music features (nowPlayingOf).
     values.push([FEATURE_KEYS.SOURCE, { text: sourceValue(entry) }]);
     const { title, artist } = playingTexts(entry, language);
     values.push([FEATURE_KEYS.TITLE, { text: title }]);
@@ -424,6 +499,84 @@ export function featureValues(entry, language) {
     values.push([FEATURE_KEYS.CHARGING, entry.battery.charging ? 1 : 0]);
   }
   return values;
+}
+
+/** The feature external ids publishNowPlaying writes to, by `music` type. */
+export const NOW_PLAYING_KEYS = {
+  [TYPES.MUSIC.PLAYBACK_STATE]: FEATURE_KEYS.PLAYBACK,
+  [TYPES.MUSIC.TITLE]: FEATURE_KEYS.MUSIC_TITLE,
+  [TYPES.MUSIC.ARTIST]: FEATURE_KEYS.MUSIC_ARTIST,
+  [TYPES.MUSIC.ALBUM]: FEATURE_KEYS.ALBUM,
+  [TYPES.MUSIC.ARTWORK]: FEATURE_KEYS.ARTWORK,
+  [TYPES.MUSIC.DURATION]: FEATURE_KEYS.DURATION,
+  [TYPES.MUSIC.POSITION]: FEATURE_KEYS.POSITION,
+  [TYPES.MUSIC.MUTE]: FEATURE_KEYS.MUSIC_MUTE,
+};
+
+/**
+ * @description What the speaker plays, as a publishNowPlaying snapshot
+ * (the volume stays with the other states). Cleared texts are explicit
+ * empty strings: an absent key would leave the previous track on screen.
+ * @param {object} entry - Speaker entry.
+ * @param {string} language - Language (the "TV" title).
+ * @returns {object|null} The snapshot, null when nothing is known yet.
+ */
+export function nowPlayingOf(entry, language) {
+  const snapshot = {};
+  if (typeof entry.muted === 'boolean') {
+    snapshot.mute = entry.muted;
+  }
+  const playing = entry.nowPlaying;
+  if (entry.on === false || playing) {
+    const loaded = entry.on !== false && playing;
+    const tv = loaded && sourceValue(entry) === 'tv';
+    const track = loaded && !tv;
+    const duration = track ? (playing.duration ?? 0) : 0;
+    const position = track ? (playing.position ?? 0) : 0;
+    Object.assign(snapshot, {
+      playback_state:
+        loaded && playing.playing ? MUSIC_PLAYBACK_STATE.PLAYING : MUSIC_PLAYBACK_STATE.PAUSED,
+      title: tv
+        ? text('source_tv', language)
+        : track
+          ? playing.title || sourceLabel(entry, language)
+          : '',
+      artist: track ? playing.artist : '',
+      album: track ? playing.album : '',
+      artwork_url: track && /^https:\/\//i.test(playing.art) ? playing.art : null,
+      duration: Math.min(duration, MAX_SECONDS),
+      position: Math.min(duration > 0 ? Math.min(position, duration) : position, MAX_SECONDS),
+    });
+  }
+  return Object.keys(snapshot).length > 0 ? snapshot : null;
+}
+
+/**
+ * @description The presets of a speaker as music catalog items (the
+ * "browse" panel of the Music box): the id is the source value, played
+ * back by sourceCommand.
+ * @param {object} entry - Speaker entry.
+ * @param {string} language - Language.
+ * @param {Function} artworkKey - `(url) => key` of the SDK client.
+ * @returns {object[]} MediaItems, by preset number.
+ */
+export function presetItems(entry, language, artworkKey) {
+  return (entry.presets ?? []).map((preset) => {
+    const art = preset.content.containerArt;
+    return {
+      id: presetValue(preset.id),
+      type: RADIO_SOURCES.has(preset.content.source)
+        ? MUSIC_MEDIA_TYPES.RADIO
+        : MUSIC_MEDIA_TYPES.PLAYLIST,
+      title: (preset.name || `${text('preset', language)} ${preset.id}`).slice(0, MAX_TEXT),
+      subtitle: `${text('preset', language)} ${preset.id}`,
+      ...(typeof art === 'string' && /^https:\/\//i.test(art)
+        ? { artwork_key: artworkKey(art) }
+        : {}),
+      browsable: false,
+      playable: true,
+    };
+  });
 }
 
 /**
@@ -458,6 +611,7 @@ export function commandFor(entry, key, value) {
       };
     }
     case FEATURE_KEYS.MUTE:
+    case FEATURE_KEYS.MUSIC_MUTE:
       return {
         resource: '/audio/volume',
         method: 'PUT',
@@ -475,6 +629,33 @@ export function commandFor(entry, key, value) {
         resource: '/content/transportControl',
         method: 'PUT',
         body: { state },
+        applyAs: '/content/nowPlaying',
+      };
+    }
+    case FEATURE_KEYS.PLAYBACK: {
+      const state = {
+        [MUSIC_PLAYBACK_STATE.PAUSED]: 'PAUSE',
+        [MUSIC_PLAYBACK_STATE.PLAYING]: 'PLAY',
+      }[Number(value)];
+      if (!state) {
+        throw new RangeError(String(value));
+      }
+      return {
+        resource: '/content/transportControl',
+        method: 'PUT',
+        body: { state },
+        applyAs: '/content/nowPlaying',
+      };
+    }
+    case FEATURE_KEYS.POSITION: {
+      const position = Math.round(Number(value));
+      if (!Number.isFinite(position) || position < 0 || position > MAX_SECONDS) {
+        throw new RangeError(String(value));
+      }
+      return {
+        resource: '/content/transportControl',
+        method: 'PUT',
+        body: { state: 'SEEK', position },
         applyAs: '/content/nowPlaying',
       };
     }

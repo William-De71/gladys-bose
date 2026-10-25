@@ -114,7 +114,7 @@ test('READMEs: four languages, navigation, badges, cover, same structure, images
     assert.match(text, /img\.shields\.io\/badge\/(license|licence|Lizenz|licencia)-Apache--2\.0/);
     assert.match(text, /img\.shields\.io\/github\/v\/release\/William-De71\/gladys-bose/);
     assert.match(text, /actions\/workflow\/status\/William-De71\/gladys-bose\/release\.yml/);
-    assert.match(text, /Gladys-%E2%89%A5%205\.1\.0/);
+    assert.match(text, /Gladys-%E2%89%A5%205\.3\.0/);
     assert.match(text, /!\[[^\]]+\]\(cover\.jpg\)/, `${README[language]} shows the cover`);
     assert.ok(
       text.includes(`(docs/assets/widgets.${language}.png)`),

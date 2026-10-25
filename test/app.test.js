@@ -7,7 +7,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createFakeGladys } from '@gladysassistant/integration-sdk/testing';
-import { validateWidgetContent, validateWidgetImage } from '@gladysassistant/integration-sdk';
+import {
+  artworkKey,
+  validateMediaItems,
+  validateWidgetContent,
+  validateWidgetImage,
+} from '@gladysassistant/integration-sdk';
 
 import { createApp } from '../src/app.js';
 import { createArtStore } from '../src/art.js';
@@ -242,6 +247,111 @@ test('commands: every feature reaches the speaker', async () => {
     ok(await setValue(fake, SALON, 'volume', 20));
     assert.equal(salon.volume.value, 20);
     assert.equal(world.cloud.refreshes, 1);
+  } finally {
+    await stop();
+  }
+});
+
+test('music player: now playing on events, one batch, seek, presets, covers', async () => {
+  const { fake, salon, stop } = await setup();
+  // The POST /state requests carrying a music feature of the salon.
+  const musicBatches = () =>
+    fake.requests
+      .filter((request) => request.path.endsWith('/state') && request.status !== 400)
+      .map((request) => request.body.states.map((state) => state.device_feature_external_id))
+      .filter(
+        (ids) =>
+          ids.some((featureId) => featureId === `${SALON}:music-title`) ||
+          ids.some((featureId) => featureId === `${SALON}:position`),
+      );
+  try {
+    assert.equal(last(fake, SALON, 'playback-state'), 1);
+    assert.equal(last(fake, SALON, 'music-title'), 'So What');
+    assert.equal(last(fake, SALON, 'music-artist'), 'Miles Davis');
+    assert.equal(last(fake, SALON, 'album'), 'Kind of Blue');
+    assert.equal(last(fake, SALON, 'artwork'), artworkKey('https://i.scdn.co/image/kind-of-blue'));
+    assert.equal(last(fake, SALON, 'duration'), 562);
+    assert.equal(last(fake, SALON, 'position'), 12);
+    assert.equal(last(fake, SALON, 'music-mute'), 0);
+    // The 0.1 text features are still published.
+    assert.equal(last(fake, SALON, 'title'), 'So What');
+    assert.equal(last(fake, KITCHEN, 'music-title'), 'So What');
+
+    // A new track, pushed by the speaker: title and position in one request.
+    const before = musicBatches().length;
+    salon.handle('PUT', '/content/transportControl', { state: 'SKIPNEXT' });
+    await until(() => last(fake, SALON, 'music-title') === 'Freddie Freeloader');
+    assert.equal(last(fake, SALON, 'position'), 0);
+    const batches = musicBatches().slice(before);
+    assert.equal(batches.length, 1);
+    assert.ok(batches[0].includes(`${SALON}:position`));
+    assert.ok(!batches[0].includes(`${SALON}:album`), 'unchanged: not sent again');
+
+    // The same body pushed again (a volume change, another resource): no
+    // position sent, the dashboard extrapolates it.
+    salon.push('/content/nowPlaying', salon.nowPlaying());
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    assert.equal(musicBatches().length, before + 1);
+
+    // Commands from the Music box.
+    ok(await setValue(fake, SALON, 'position', 100));
+    assert.equal(salon.playing.position, 100);
+    await until(() => last(fake, SALON, 'position') === 100);
+    ok(await setValue(fake, SALON, 'playback-state', 0));
+    assert.equal(salon.playing.status, 'PAUSED');
+    await until(() => last(fake, SALON, 'playback-state') === 0);
+    ok(await setValue(fake, SALON, 'playback-state', 1));
+    assert.equal(salon.playing.status, 'PLAY');
+    ok(await setValue(fake, SALON, 'music-mute', 1));
+    assert.equal(salon.volume.muted, true);
+    await until(() => last(fake, SALON, 'music-mute') === 1);
+    const stopRefused = await setValue(fake, SALON, 'playback-state', 2);
+    assert.equal(stopRefused.success, false);
+
+    // The presets are the catalog.
+    const device = deviceOf(fake, SALON);
+    const root = ok(await fake.musicBrowse(device));
+    assert.equal(root.total, 2);
+    assert.deepEqual(validateMediaItems(root.items), []);
+    assert.deepEqual(
+      root.items.map((item) => [item.id, item.title]),
+      [
+        ['preset-1', 'FIP'],
+        ['preset-2', 'Jazz'],
+      ],
+    );
+    assert.deepEqual(ok(await fake.musicBrowse(device, { offset: 1, limit: 1 })).items.length, 1);
+    assert.deepEqual(ok(await fake.musicBrowse(device, { parentId: 'preset-1' })), {
+      items: [],
+      total: 0,
+    });
+    ok(await fake.musicPlay(device, { id: 'preset-1', type: 'radio' }));
+    assert.equal(salon.playing.location, '/v1/playback/station/s15200');
+    assert.equal(salon.lastInitiator, 'person-1');
+    await until(() => last(fake, SALON, 'music-title') === 'FIP');
+    assert.equal(last(fake, SALON, 'music-artist'), '', 'cleared explicitly');
+    assert.equal(last(fake, SALON, 'album'), '');
+    const unknown = await fake.musicPlay(device, { id: 'spotify:track:1', type: 'track' });
+    assert.equal(unknown.success, false);
+    assert.match(unknown.error, /Valeur non acceptée/);
+
+    // Covers: downloaded and checked by the cover store, served by key.
+    const cover = ok(
+      await fake.musicGetArtwork(artworkKey('https://i.scdn.co/image/kind-of-blue')),
+    ).image;
+    assert.equal(cover, PNG.toString('base64'));
+    assert.equal(
+      (await fake.musicGetArtwork(artworkKey('https://cdn.example/1.png'))).success,
+      false,
+    );
+    assert.equal((await fake.musicGetArtwork('art-000000000000')).success, false);
+
+    // Standby: everything cleared, paused.
+    ok(await setValue(fake, SALON, 'power', 0));
+    await until(() => last(fake, SALON, 'music-title') === '');
+    assert.equal(last(fake, SALON, 'playback-state'), 0);
+    assert.equal(last(fake, SALON, 'artwork'), '');
+    assert.equal(last(fake, SALON, 'duration'), 0);
   } finally {
     await stop();
   }

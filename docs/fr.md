@@ -10,7 +10,7 @@ Elle s’adresse aux enceintes installées avec l’**application Bose** (ancien
 
 ## Prérequis
 
-- Gladys Assistant 5.1.0 ou plus récent.
+- Gladys Assistant 5.3.0 ou plus récent.
 - Des enceintes installées dans l’application Bose et connectées au **même réseau que Gladys**.
 - L’e-mail et le mot de passe du compte Bose auquel les enceintes appartiennent. Un compte ouvert avec Google ou Apple n’a pas de mot de passe : définissez-en un d’abord sur la page du compte Bose.
 - Un accès Internet pour Gladys, le temps de la connexion au compte Bose (puis au plus une fois par heure, pour renouveler le jeton).
@@ -37,9 +37,11 @@ Si Bose refuse l’e-mail ou le mot de passe, l’intégration l’indique et ne
 Ouvrez l’onglet **Découverte** de l’intégration et ajoutez vos enceintes. Une enceinte a ces fonctionnalités, selon le modèle :
 
 - **Marche/veille**, **Volume** (0 à 100), **Muet**.
-- **Lecture**, **Pause**, **Précédent**, **Suivant** et **État de la lecture** : la boîte Musique du tableau de bord les utilise.
+- **Lecture**, **Pause**, **Précédent**, **Suivant** et **État de la lecture** (en lecture ou en pause, aussi une commande) : la boîte Musique du tableau de bord les utilise.
 - **Source** : TV, optique, entrée analogique ou AUX quand la barre de son les a, et vos préréglages (« Préréglage 2 · FIP »). **Autre** désigne une source que Gladys ne peut pas choisir elle-même (Spotify, AirPlay, Bluetooth…).
-- **En cours** et **Artiste**.
+- **En cours** et **Artiste** (textes, comme avant).
+- Pour la boîte Musique du tableau de bord : **Titre**, **Artiste du morceau**, **Album**, **Pochette**, **Durée**, **Position** (faites glisser la barre pour vous déplacer) et **Muet (lecteur)**. La boîte liste aussi vos **préréglages** : un appui en lance un. Il n’y a ni recherche ni file d’attente : les enceintes ne les proposent pas sur le réseau local.
+- Une enceinte ajoutée avec une version plus ancienne : ouvrez l’onglet **Découverte** et appuyez sur **Mettre à jour** pour obtenir ces fonctionnalités. Rien d’autre ne change.
 - **Graves**, **Aigus**, et sur les barres de son **Centre**, **Surround**, **Hauteur**, **Caisson de basses** : les valeurs brutes de l’enceinte, en général de −100 à +100 par pas de 10.
 - **Mode dialogue** sur les barres de son qui l’ont.
 - **Batterie** et **En charge** sur les enceintes portables.

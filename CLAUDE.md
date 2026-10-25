@@ -63,7 +63,9 @@ test/helpers/                fake speakers (real ws servers) and fake Bose cloud
 
 - **External ids are forever**: `ext:{selector}:speaker:{GUID}` (lowercased)
   and `…:<feature key>` (`power`, `volume`, `mute`, `play`, `pause`,
-  `previous`, `next`, `playback-state`, `source`, `title`, `artist`, `bass`,
+  `previous`, `next`, `playback-state`, `source`, `title`, `artist`,
+  `music-title`, `music-artist`, `album`, `artwork`, `duration`, `position`,
+  `music-mute`, `bass`,
   `midrange`, `treble`, `center`, `surround`, `height`, `subwoofer`,
   `audio-mode`, `battery`, `charging`). Source values (`other`, `tv`,
   `optical`, `analog`, `aux`, `preset-<n>`), config, action, field, widget,
@@ -76,6 +78,12 @@ test/helpers/                fake speakers (real ws servers) and fake Bose cloud
 - **Secrets**: never log the password, a token, or a whole request header.
   `test/app.test.js` checks the logs. A refused password is never retried on
   its own (account lockout).
+- **Music player** (Gladys 5.3): `playback-state` and the `music-*`,
+  `album`, `artwork`, `duration`, `position` features go through
+  `publishNowPlaying` (one batch, diffed, position only on a change of state
+  or track or a seek), never through `src/states.js`; the `text` features
+  `title` / `artist` of 0.1 stay. The catalog is the presets (`music.browse`);
+  covers are served by `onMusicGetArtwork` through `src/art.js`.
 - **No polling**: the speakers push (`PUT /subscription`, version 2). Only a
   liveness GET every minute and the battery every 5 min.
 - **Scene events**: one per transition, never in the 5 s after a scene action

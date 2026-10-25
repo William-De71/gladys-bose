@@ -16,6 +16,7 @@ const isObject = (value) => value !== null && typeof value === 'object' && !Arra
 const object = (value) => (isObject(value) ? value : {});
 const string = (value) => (typeof value === 'string' ? value : '');
 const integer = (value) => (Number.isInteger(value) ? value : null);
+const seconds = (value) => (Number.isInteger(value) && value >= 0 ? value : null);
 
 /** The sound settings handled as features, with the resource of each. */
 export const AUDIO_SETTINGS = {
@@ -101,7 +102,7 @@ export function parseVolume(body) {
  * @description `/content/nowPlaying`.
  * @param {object} body - Response body.
  * @returns {object} `{ status, playing, sourceId, sourceName, contentSource,
- * contentAccount, location, title, artist, album, art }`.
+ * contentAccount, location, title, artist, album, art, duration, position }`.
  */
 export function parseNowPlaying(body) {
   const nowPlaying = object(body);
@@ -124,6 +125,10 @@ export function parseNowPlaying(body) {
     album: string(metadata.album),
     // Cover art: an https URL of the music service, when it gives one.
     art: string(track.containerArt) || string(container.containerArt),
+    // Seconds, null when the speaker does not say (a live stream, an input).
+    // `timeIntoTrack` is a sample: the position when the speaker wrote the body.
+    duration: seconds(metadata.duration),
+    position: seconds(state.timeIntoTrack),
   };
 }
 

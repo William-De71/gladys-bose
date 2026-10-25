@@ -81,7 +81,7 @@
         "min": 0,
         "max": 1,
         "step": null,
-        "read_only": true
+        "read_only": false
       },
       {
         "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:source",
@@ -112,6 +112,76 @@
         "max": 0,
         "step": null,
         "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:music-title",
+        "category": "music",
+        "type": "title",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:music-artist",
+        "category": "music",
+        "type": "artist",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:album",
+        "category": "music",
+        "type": "album",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:artwork",
+        "category": "music",
+        "type": "artwork",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:duration",
+        "category": "music",
+        "type": "duration",
+        "unit": "seconds",
+        "min": 0,
+        "max": 86400,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:position",
+        "category": "music",
+        "type": "position",
+        "unit": "seconds",
+        "min": 0,
+        "max": 86400,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:music-mute",
+        "category": "music",
+        "type": "mute",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
       },
       {
         "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:bass",
@@ -257,7 +327,7 @@
         "min": 0,
         "max": 1,
         "step": null,
-        "read_only": true
+        "read_only": false
       },
       {
         "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:source",
@@ -288,6 +358,76 @@
         "max": 0,
         "step": null,
         "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:music-title",
+        "category": "music",
+        "type": "title",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:music-artist",
+        "category": "music",
+        "type": "artist",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:album",
+        "category": "music",
+        "type": "album",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:artwork",
+        "category": "music",
+        "type": "artwork",
+        "unit": null,
+        "min": 0,
+        "max": 0,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:duration",
+        "category": "music",
+        "type": "duration",
+        "unit": "seconds",
+        "min": 0,
+        "max": 86400,
+        "step": null,
+        "read_only": true
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:position",
+        "category": "music",
+        "type": "position",
+        "unit": "seconds",
+        "min": 0,
+        "max": 86400,
+        "step": null,
+        "read_only": false
+      },
+      {
+        "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:music-mute",
+        "category": "music",
+        "type": "mute",
+        "unit": null,
+        "min": 0,
+        "max": 1,
+        "step": null,
+        "read_only": false
       },
       {
         "external_id": "ext:test-integration:speaker:3c4fa1b2-5e6d-4f70-8a9b-0c1d2e3f4a5b:bass",

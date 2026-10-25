@@ -9,8 +9,10 @@
 //               speaker to read its name, model and capabilities
 //   states      the speakers the user created stay connected and push their
 //               changes (src/hub.js); only the changes are published
-//   commands    Gladys features, scene actions, widget buttons -> requests on
-//               the WebSocket of the speaker
+//   commands    Gladys features, scene actions, widget buttons, the music
+//               panel (presets) -> requests on the WebSocket of the speaker
+//   music       what plays, published with publishNowPlaying on every push
+//               of the speaker (never on a timer); covers served by key
 //   scenes      transitions pushed by the speakers -> scene events
 //
 // A speaker is identified by its GUID: when its address changes (DHCP), the
@@ -32,7 +34,11 @@ import {
   DEVICE_TYPE,
   FEATURE_KEYS,
   featureValues,
+  NOW_PLAYING_KEYS,
+  nowPlayingOf,
   presetCommand,
+  presetItems,
+  presetValue,
   sourceCommand,
   sourceLabel,
   sourceValue,
@@ -209,6 +215,29 @@ export function createApp(
     const ids = gladys.externalIds(DEVICE_TYPE, entry.guid);
     for (const [key, value] of featureValues(entry, config.language)) {
       states.push(ids.feature(key), value);
+    }
+    publishNowPlaying(entry, ids);
+  };
+
+  // The SDK diffs against what it published last (forgotten with the other
+  // states when the device is created or updated) and sends one batch: a
+  // track change is one redraw, the position only on a change of state or
+  // track, or a seek. Created devices only, like the other states.
+  const featureExternalIds = (ids) =>
+    Object.fromEntries(
+      Object.entries(NOW_PLAYING_KEYS).map(([type, key]) => [type, ids.feature(key)]),
+    );
+
+  const publishNowPlaying = (entry, ids) => {
+    const snapshot = isCreated(entry) ? nowPlayingOf(entry, config.language) : null;
+    if (snapshot) {
+      safely(
+        () =>
+          gladys.publishNowPlaying(ids.device, snapshot, {
+            featureExternalIds: featureExternalIds(ids),
+          }),
+        'now playing',
+      );
     }
   };
 
@@ -710,6 +739,40 @@ export function createApp(
       hub.refresh(entry, '/grouping/activeGroups'),
     ]);
     return undefined;
+  });
+
+  // --- Music player (Gladys 5.3) -------------------------------------------------------------
+
+  // The catalog is the presets of the speaker, the same list as the source
+  // select; nothing else can be started from the local API.
+  gladys.onMusicBrowse(async (device, { parentId, offset = 0, limit = 50 } = {}) => {
+    const entry = entryFor(device?.external_id);
+    if (parentId) {
+      return { items: [], total: 0 };
+    }
+    const items = presetItems(entry, config.language, (url) => gladys.artworkKey(url));
+    return { items: items.slice(offset, offset + limit), total: items.length };
+  });
+
+  gladys.onMusicPlay(async (device, media, mode) => {
+    const entry = entryFor(device?.external_id);
+    const id = String(media?.id ?? '');
+    const preset = (entry.presets ?? []).find((candidate) => presetValue(candidate.id) === id);
+    if (!preset || (mode && mode !== 'replace')) {
+      throw userError('errorValue', { value: truncate(id, 60) });
+    }
+    await send(entry, presetCommand(preset, account.personId()));
+  });
+
+  // Covers: the URL the key was made from (artworkKey), downloaded and
+  // checked by the cover store (https, ≤ 300 KB, PNG/JPEG/WebP).
+  gladys.onMusicGetArtwork(async (key) => {
+    const url = gladys.artworkUrls.get(key);
+    const image = url ? art.image(await art.keyFor(url)) : '';
+    if (!image) {
+      throw new Error(`no cover for ${key}`);
+    }
+    return image;
   });
 
   // --- Widget --------------------------------------------------------------------------------------

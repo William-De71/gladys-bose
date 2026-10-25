@@ -39,8 +39,10 @@ test('one version everywhere, image of this repository', () => {
 
 test('store rules: type, Gladys version, transports, categories, permissions', () => {
   assert.equal(manifest.type, 'device');
-  // widgets and scene_* need 5.1.0; no widget form, no houses source.
-  assert.equal(manifest.gladys_version, '>=5.1.0');
+  // widgets and scene_* need 5.1.0, the music field and types 5.3.0.
+  assert.equal(manifest.gladys_version, '>=5.3.0');
+  // The presets are the catalog; no search, no queue on the local API.
+  assert.deepEqual(manifest.music, { browse: true });
   // Commands and states stay on the local network; the Bose cloud only
   // gives the account token (README "Transport").
   assert.deepEqual(manifest.transports, ['local']);
