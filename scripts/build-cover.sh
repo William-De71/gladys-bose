@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
-# -----------------------------------------------------------------------------
-# cover.jpg from cover.svg: exactly 800 x 534, JPEG, under 150 KB (the store
-# rules). Needs Inkscape and ImageMagick. Run from the repository root.
-# -----------------------------------------------------------------------------
+# Builds cover.jpg (800 x 534, < 150 KB, as the integration store requires)
+# from cover.svg. The SVG is self-contained: text is already converted to paths
+# and the brand logo (a trademark of its owner, used only to name the service
+# this unofficial integration connects to) is embedded. Needs Inkscape and
+# ImageMagick.
 set -euo pipefail
-repo="$(cd "$(dirname "$0")/.." && pwd)"
-work="$(mktemp -d)"
-trap 'rm -rf "$work"' EXIT
-inkscape "$repo/cover.svg" --export-type=png --export-filename="$work/cover.png" \
-  --export-width=800 --export-height=534 >/dev/null 2>&1
-magick "$work/cover.png" -background white -flatten -strip -quality 88 "$repo/cover.jpg"
-identify -format '%wx%h %b\n' "$repo/cover.jpg"
+cd "$(dirname "$0")/.."
+tmp="$(mktemp --suffix=.png)"
+trap 'rm -f "$tmp"' EXIT
+inkscape cover.svg --export-type=png --export-filename="$tmp" -w 800 -h 534 >/dev/null 2>&1
+magick "$tmp" -strip -quality 86 -sampling-factor 4:2:0 cover.jpg
+size="$(stat -c %s cover.jpg)"
+dims="$(magick identify -format '%wx%h' cover.jpg)"
+echo "cover.jpg: ${dims}, ${size} bytes"
+[ "$dims" = "800x534" ] || { echo "wrong dimensions" >&2; exit 1; }
+[ "$size" -lt $((150 * 1024)) ] || { echo "too heavy" >&2; exit 1; }
