@@ -189,7 +189,11 @@ test('states: published once created, then pushed by the speaker without polling
     kitchen.push('/system/battery', kitchen.battery);
     await until(async () => {
       await app.flushStates();
-      return last(fake, KITCHEN, 'charging') === 1;
+      return (
+        last(fake, KITCHEN, 'charging') === 1 &&
+        last(fake, SALON, 'volume') === 12 &&
+        last(fake, SALON, 'title') === 'Freddie Freeloader'
+      );
     });
     assert.equal(last(fake, SALON, 'volume'), 12);
     assert.equal(last(fake, SALON, 'title'), 'Freddie Freeloader');
