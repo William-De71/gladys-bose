@@ -226,7 +226,7 @@ flowchart LR
 - The pull request title becomes the squash commit, hence the changelog line: write it in English, for the user (`feat(widget): …`). `pr-title.yml` checks it. Never edit `CHANGELOG.md` by hand.
 - The image exists before `main` announces its version (the store indexes `main`).
 - 1.0.0 is a manual decision: Actions → Release → Run workflow, `release-as: 1.0.0`. `dry-run` shows the version and the changelog without publishing.
-- **Protected `main`**: the release pushes a commit to `main`. With a branch protection or a ruleset requiring pull requests or status checks, allow GitHub Actions to bypass it (or use a GitHub App), otherwise the release stops after the image.
+- **Protected branch**: rulesets require a pull request on `main` and lock the `v*` tags; only the maintainer and deploy keys get through. The release pushes with the deploy key of the `release` environment (secret `RELEASE_DEPLOY_KEY`, `main` only): a run from another branch never gets it. `build.yml` and `github-release.yml` do not start on a tag: the release calls them, or run them by hand (Actions → Run workflow, with `version` for the image) to finish a release.
 - After the first release, make the package public if needed: Package settings → Change visibility → Public.
 
 ## Troubleshooting

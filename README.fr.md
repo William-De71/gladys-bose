@@ -226,7 +226,7 @@ flowchart LR
 - Le titre de la pull request devient le commit squash, donc la ligne du changelog : écrivez-le en anglais, pour l’utilisateur (`feat(widget): …`). `pr-title.yml` le vérifie. N’éditez jamais `CHANGELOG.md` à la main.
 - L’image existe avant que `main` annonce sa version (le store indexe `main`).
 - La 1.0.0 est une décision manuelle : Actions → Release → Run workflow, `release-as: 1.0.0`. `dry-run` affiche la version et le changelog sans rien publier.
-- **`main` protégée** : la release pousse un commit sur `main`. Avec une protection de branche ou un ruleset exigeant des pull requests ou des status checks, autorisez GitHub Actions à le contourner (ou utilisez une GitHub App), sinon la release s’arrête après l’image.
+- **Branche protégée** : des rulesets imposent une pull request sur `main` et verrouillent les tags `v*` ; seuls le mainteneur et les deploy keys passent. La release pousse avec la deploy key de l’environnement `release` (secret `RELEASE_DEPLOY_KEY`, `main` seulement) : un run lancé depuis une autre branche ne l’obtient jamais. `build.yml` et `github-release.yml` ne démarrent pas sur un tag : la release les appelle, ou lancez-les à la main (Actions → Run workflow, avec `version` pour l’image) pour terminer une release.
 - Après la première release, rendez le package public si besoin : Package settings → Change visibility → Public.
 
 ## Dépannage
